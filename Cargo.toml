@@ -1,11 +1,11 @@
 [package]
-name = "cargo-depgraph"
+name = "cargo-depviz"
 version = "1.6.0"
-authors = ["Jonas Platte <jplatte@posteo.de>"]
+authors = ["Levi Zim <rsworktech@outlook.com>", "Jonas Platte <jplatte@posteo.de>"]
 license = "GPL-3.0-or-later"
 edition = "2021"
-description = "Creates dependency graphs for cargo projects using `cargo metadata` and graphviz."
-homepage = "https://github.com/jplatte/cargo-depgraph"
+description = "Visualize dependency graphs for cargo projects"
+homepage = "https://github.com/kxxt/cargo-depviz"
 readme = "README.md"
 categories = ["development-tools::cargo-plugins", "visualization"]
 exclude = [".gitignore", ".rustfmt.toml", "*.png"]
