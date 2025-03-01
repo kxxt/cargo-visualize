@@ -12,5 +12,9 @@
     "typescript": "~5.7.2",
     "vite": "^6.2.0"
   },
-  "packageManager": "yarn@4.6.0"
+  "packageManager": "yarn@4.6.0",
+  "dependencies": {
+    "@types/cytoscape": "^3.21.9",
+    "cytoscape": "^3.31.1"
+  }
 }

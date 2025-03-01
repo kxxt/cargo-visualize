@@ -365,6 +365,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/cytoscape@npm:^3.21.9":
+  version: 3.21.9
+  resolution: "@types/cytoscape@npm:3.21.9"
+  checksum: 10c0/49c25b18322c405166982ae60ea6618e07329931e7b8824c84ee418ba705ac178d6a47886089bc3087167493c4dfe297a1b20fbc964fc22d662ee83f377d8f5b
+  languageName: node
+  linkType: hard
+
 "@types/estree@npm:1.0.6":
   version: 1.0.6
   resolution: "@types/estree@npm:1.0.6"
@@ -456,6 +463,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "cargo-depvis-frontend@workspace:."
   dependencies:
+    "@types/cytoscape": "npm:^3.21.9"
+    cytoscape: "npm:^3.31.1"
     typescript: "npm:~5.7.2"
     vite: "npm:^6.2.0"
   languageName: unknown
@@ -492,6 +501,13 @@ __metadata:
     shebang-command: "npm:^2.0.0"
     which: "npm:^2.0.1"
   checksum: 10c0/053ea8b2135caff68a9e81470e845613e374e7309a47731e81639de3eaeb90c3d01af0e0b44d2ab9d50b43467223b88567dfeb3262db942dc063b9976718ffc1
+  languageName: node
+  linkType: hard
+
+"cytoscape@npm:^3.31.1":
+  version: 3.31.1
+  resolution: "cytoscape@npm:3.31.1"
+  checksum: 10c0/7c439561be055c3979d4e724daff398f3a0f752ffa14086952e5466e38dfc7a178f451928a90bca58971665db1fecda5777abb8c74f83ef68cfaabb08c204b19
   languageName: node
   linkType: hard
 
