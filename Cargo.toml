@@ -12,10 +12,16 @@ exclude = [".gitignore", ".rustfmt.toml", "*.png"]
 
 [dependencies]
 anyhow = "1.0.38"
+axum = "0.8.1"
 base64 = "0.22.1"
 cargo_metadata = "0.19"
+cfg-if = "1.0.0"
 clap = "4.0.18"
+nanoid = "0.4.0"
 petgraph = { version = "0.7", default-features = false, features = ["stable_graph"] }
+serde = { version = "1.0.218", features = ["derive"] }
+tokio = { version = "1.43.0", features = ["macros"] }
+tower-http = { version = "0.6.2", features = ["cors"] }
 
 [lints.rust]
 rust_2018_idioms = { level = "warn", priority = -1 }

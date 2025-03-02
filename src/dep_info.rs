@@ -1,9 +1,25 @@
-use std::ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign};
+use std::{
+    hash::{DefaultHasher, Hash, Hasher},
+    ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign},
+};
 
 use cargo_metadata::DependencyKind as MetaDepKind;
+use serde::Serialize;
 
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Copy, Debug, Default, Serialize)]
+pub struct CrateInfo {}
+
+#[derive(Clone, Debug, Default, Serialize)]
 pub(crate) struct DepInfo {
+    pub id: String,
+    pub source: String,
+    pub target: String,
+    #[serde(flatten)]
+    pub inner: DepInfoInner,
+}
+
+#[derive(Clone, Copy, Debug, Default, Serialize, Hash)]
+pub(crate) struct DepInfoInner {
     pub kind: DepKind,
 
     // TODO: instead collect targets, once we can actually evaluate whether they apply
@@ -21,7 +37,15 @@ pub(crate) struct DepInfo {
     pub visited: bool,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+impl DepInfoInner {
+    pub fn hash(&self) -> u64 {
+        let mut s = DefaultHasher::new();
+        Hash::hash(&self, &mut s);
+        s.finish()
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Hash)]
 pub(crate) struct DepKind {
     pub host: BuildFlag,
     pub target: BuildFlag,
@@ -94,7 +118,7 @@ impl From<MetaDepKind> for DepKind {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Hash)]
 pub enum BuildFlag {
     Always,
     Test,

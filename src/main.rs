@@ -1,7 +1,18 @@
-use std::iter;
+use std::{iter, rc::Rc, sync::Arc};
 
+use axum::{
+    extract::{Path, State},
+    http::StatusCode,
+    routing::get,
+    Json, Router,
+};
 use cargo_metadata::MetadataCommand;
-use output::html;
+use cfg_if::cfg_if;
+use dep_info::CrateInfo;
+use dto::{DepGraphEdges, DepGraphNodes};
+use graph::DepGraph;
+use petgraph::visit::IntoEdges;
+use tower_http::cors::CorsLayer;
 
 // `DepInfo` represents the data associated with dependency graph edges
 mod dep_info;
@@ -11,23 +22,27 @@ mod package;
 // Contains the `DepGraph` type and most of the graph building / analysis logic
 mod graph;
 // Contains some auxiliary logic (currently just checking for packages of the same name)
+mod dto;
 mod util;
 
 // Command-line parsing
 mod cli;
-// Dot output generation
-mod output;
 
 use self::{
     cli::parse_options,
     graph::{
         dedup_transitive_deps, get_dep_graph, remove_deps, remove_irrelevant_deps, update_dep_info,
     },
-    output::dot,
     util::set_name_stats,
 };
 
-fn main() -> anyhow::Result<()> {
+#[derive(Clone)]
+struct AppState {
+    graph: Arc<DepGraph>,
+}
+
+#[tokio::main(flavor = "current_thread")]
+async fn main() -> anyhow::Result<()> {
     let config = parse_options();
     let mut cmd = MetadataCommand::new();
 
@@ -71,9 +86,41 @@ fn main() -> anyhow::Result<()> {
     }
     set_name_stats(&mut graph);
 
-    println!("{}", if config.html { html(&graph) } else { dot(&graph, false) });
+    cfg_if! {
+        if #[cfg(debug_assertions)] {
+            let cors = CorsLayer::permissive();
+        } else {
+            let cors = CorsLayer::new();
+        }
+    };
+    let app = Router::new()
+        .route("/crate/{id}", get(handler_crate_info))
+        .route("/nodes", get(handler_nodes))
+        .route("/edges", get(handler_edges))
+        .layer(cors)
+        .with_state(AppState { graph: Arc::new(graph) });
+
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await.unwrap();
+    println!("listening on {}", listener.local_addr().unwrap());
+    axum::serve(listener, app).await.unwrap();
 
     Ok(())
+}
+
+async fn handler_crate_info(Path(id): Path<String>) -> Result<Json<CrateInfo>, StatusCode> {
+    todo!()
+}
+
+async fn handler_nodes(State(state): State<AppState>) -> Result<Json<DepGraphNodes>, StatusCode> {
+    Ok(Json(DepGraphNodes {
+        values: state.graph.node_weights().into_iter().cloned().map(Into::into).collect(),
+    }))
+}
+
+async fn handler_edges(State(state): State<AppState>) -> Result<Json<DepGraphEdges>, StatusCode> {
+    Ok(Json(DepGraphEdges {
+        values: state.graph.edge_weights().cloned().map(Into::into).collect(),
+    }))
 }
 
 fn cli_args(opt_name: &str, val: &str) -> impl Iterator<Item = String> {

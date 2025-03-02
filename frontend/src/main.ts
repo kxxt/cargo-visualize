@@ -2,35 +2,10 @@ import './style.css'
 import './graph.css'
 import cytoscape from 'cytoscape';
 
-// document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-//     <div id="topbar"></div>
-//     <div id="graph"></div>
-//     <div id="sidebar"></div>
-// `
-
+let loaded = false;
 const graph = cytoscape({
   container: document.getElementById('graph'),
-  elements: [ // list of graph elements to start with
-    { // node a
-      data: { id: 'tokio-1.0.0', package: "tokio", version: "1.0.0" },
-    },
-    { // node b
-      data: { id: 'rand-0.9.0', package: "rand", version: "0.9.0" }
-    },
-    { // node a
-      data: { id: 'tokio-1.1.0', package: "tokio", version: "1.0.0" },
-    },
-    { // node b
-      data: { id: 'rand-1.0.0', package: "rand", version: "0.9.0" }
-    },
-    { // edge ab
-      data: { id: 'tokio-1.0.0 depends on rand-0.9.0', source: 'tokio-1.0.0', target: 'rand-0.9.0' }
-    },
-    { // edge ab
-      data: { id: 'tokio-1.1.0 depends on rand-1.0.0', source: 'tokio-1.1.0', target: 'rand-1.0.0' }
-    }
-  ],
-  style: [ // the stylesheet for the graph
+  style: [
     {
       selector: 'node',
       style: {
@@ -58,3 +33,23 @@ document.getElementById("layout")!.addEventListener("click", () => {
   layout.run()
 })
 
+// Load nodes and edges
+window.addEventListener("load", async () => {
+  // Nodes
+  var resp = await fetch("http://127.0.0.1:3000/nodes");
+  let nodes = (await resp.json()).values;
+  for (let node of nodes) {
+    graph.add({
+      data: node
+    })
+  }
+  // Edges
+  var resp = await fetch("http://127.0.0.1:3000/edges");
+  let edges = (await resp.json()).values;
+  for (let edge of edges) {
+    graph.add({
+      data: edge
+    })
+  }
+  loaded = true;
+}) 

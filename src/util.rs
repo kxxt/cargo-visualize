@@ -1,16 +1,16 @@
-use std::{cell::Cell, collections::HashMap, rc::Rc};
+use std::{collections::HashMap, sync::{atomic::{AtomicU16, Ordering}, Arc}};
 
 use cargo_metadata::{Package as MetaPackage, TargetKind};
 
 use crate::graph::DepGraph;
 
 pub(crate) fn set_name_stats(graph: &mut DepGraph) {
-    let mut name_uses_map = HashMap::<String, Rc<Cell<u16>>>::new();
+    let mut name_uses_map = HashMap::<String, Arc<AtomicU16>>::new();
     for pkg in graph.node_weights_mut() {
-        let name_uses = name_uses_map.entry(pkg.name.clone()).or_default().clone();
-        name_uses.set(name_uses.get() + 1);
+        let name_uses = name_uses_map.entry(pkg.name.clone()).or_default();
+        name_uses.fetch_add(1, Ordering::SeqCst);
 
-        pkg.name_uses = Some(name_uses);
+        pkg.name_uses = Some(name_uses.clone());
     }
 }
 

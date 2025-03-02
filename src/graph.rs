@@ -6,7 +6,7 @@ use petgraph::{
     Direction,
 };
 
-use crate::{dep_info::DepInfo, package::Package};
+use crate::{dep_info::{DepInfo, DepInfoInner}, package::Package};
 
 mod build;
 
@@ -27,16 +27,16 @@ fn update_node(graph: &mut DepGraph, idx: NodeIndex<u16>) {
     let is_ws_member = graph[idx].is_ws_member;
 
     let mut incoming = graph.neighbors_directed(idx, Direction::Incoming).detach();
-    let mut node_info: Option<DepInfo> = None;
+    let mut node_info: Option<DepInfoInner> = None;
     while let Some((edge_idx, node_idx)) = incoming.next(graph) {
         // Don't backtrack on reverse dev-dependencies of workspace members
-        let ws_reverse_dev_dep = is_ws_member && graph[edge_idx].kind.is_dev_only();
+        let ws_reverse_dev_dep = is_ws_member && graph[edge_idx].inner.kind.is_dev_only();
 
-        if !ws_reverse_dev_dep && !graph[edge_idx].visited {
+        if !ws_reverse_dev_dep && !graph[edge_idx].inner.visited {
             update_node(graph, node_idx);
         }
 
-        let edge_info = graph[edge_idx];
+        let edge_info = graph[edge_idx].inner;
 
         if let Some(i) = &mut node_info {
             i.is_target_dep &= edge_info.is_target_dep;
@@ -57,7 +57,7 @@ fn update_node(graph: &mut DepGraph, idx: NodeIndex<u16>) {
 
     let mut outgoing = graph.neighbors_directed(idx, Direction::Outgoing).detach();
     while let Some(edge_idx) = outgoing.next_edge(graph) {
-        let edge_info = &mut graph[edge_idx];
+        let edge_info = &mut graph[edge_idx].inner;
 
         // it's unclear to me why this happens... maybe a bug in petgraph?
         if edge_info.visited {

@@ -1,12 +1,16 @@
-use std::collections::{hash_map::Entry as HashMapEntry, HashMap, VecDeque};
+use std::{
+    collections::{hash_map::Entry as HashMapEntry, HashMap, VecDeque},
+    hash::{DefaultHasher, Hash},
+};
 
 use anyhow::Context;
 use cargo_metadata::{DependencyKind as MetaDepKind, Metadata, Package as MetaPackage, PackageId};
+use nanoid::nanoid;
 
 use super::DepGraph;
 use crate::{
     cli::Config,
-    dep_info::{DepInfo, DepKind},
+    dep_info::{DepInfo, DepInfoInner, DepKind},
     package::Package,
     util::is_proc_macro,
 };
@@ -140,15 +144,21 @@ pub(crate) fn get_dep_graph(metadata: Metadata, config: &Config) -> anyhow::Resu
                     continue;
                 }
 
+                let inner = DepInfoInner {
+                    kind: DepKind::new(info.kind, child_is_proc_macro),
+                    is_target_dep: info.target.is_some(),
+                    is_optional,
+                    is_optional_direct: is_optional,
+                    visited: false,
+                };
                 graph.add_edge(
                     parent_idx,
                     child_idx,
                     DepInfo {
-                        kind: DepKind::new(info.kind, child_is_proc_macro),
-                        is_target_dep: info.target.is_some(),
-                        is_optional,
-                        is_optional_direct: is_optional,
-                        visited: false,
+                        id: nanoid!(),
+                        source: graph[parent_idx].id.clone(),
+                        target: graph[child_idx].id.clone(),
+                        inner,
                     },
                 );
             }
