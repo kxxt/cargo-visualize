@@ -36,9 +36,6 @@ export class DepNode extends Rect {
             y: 0,
             width: width + 10,
             height: 20,
-            fill: '#fff',
-            lineWidth: 1,
-            stroke: "#111",
         };
     }
 }

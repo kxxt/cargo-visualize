@@ -26,11 +26,32 @@ const graph = new Graph({
       labelText: (d: any) => d.id,
       labelFontSize: 10,
       labelPlacement: 'center',
+      fill: "white",
+      stroke: "#222",
+      lineWidth: 1
     },
-    palette: {
-      field: 'group',
-      color: 'tableau',
+    state: {
+      "selected": {
+        stroke: "orange",
+        strokeWidth: 2,
+        labelFontSize: 10,
+        labelShadowColor: "red",
+        labelTextDecorationColor: "red"
+      }
+    }
+  },
+  edge: {
+    style: {
+      endArrow: true,
+      endArrowSize: 7,
+      lineWidth: 2,
     },
+    state: {
+      "selected": {
+        stroke: "orange",
+        lineWidth: 3,
+      }
+    }
   },
   layout: layouts[layoutElement.value],
   behaviors: ['drag-canvas', 'zoom-canvas', 'drag-element', 'click-select'],
