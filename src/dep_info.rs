@@ -11,6 +11,7 @@ pub struct CrateInfo {}
 
 #[derive(Clone, Debug, Default, Serialize)]
 pub(crate) struct DepInfo {
+    #[serde(skip)]
     pub id: String,
     pub source: String,
     pub target: String,

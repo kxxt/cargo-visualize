@@ -18,6 +18,7 @@ use crate::{
 
 #[derive(Clone, Serialize)]
 pub(crate) struct Package {
+    #[serde(skip)]
     pub id: String,
     pub name: String,
     pub version: Version,

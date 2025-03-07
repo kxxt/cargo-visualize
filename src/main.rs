@@ -9,10 +9,10 @@ use axum::{
 use cargo_metadata::MetadataCommand;
 use cfg_if::cfg_if;
 use dep_info::CrateInfo;
-use dto::{DepGraphEdges, DepGraphNodes};
+use dto::{DepGraphEdges, DepGraphInfo, DepGraphNodes};
 use graph::DepGraph;
 use petgraph::visit::IntoEdges;
-use tower_http::cors::CorsLayer;
+use tower_http::{cors::CorsLayer, services::ServeDir};
 
 // `DepInfo` represents the data associated with dependency graph edges
 mod dep_info;
@@ -97,6 +97,8 @@ async fn main() -> anyhow::Result<()> {
         .route("/crate/{id}", get(handler_crate_info))
         .route("/nodes", get(handler_nodes))
         .route("/edges", get(handler_edges))
+        .route("/graph", get(handler_graph))
+        .fallback_service(ServeDir::new("frontend/dist"))
         .layer(cors)
         .with_state(AppState { graph: Arc::new(graph) });
 
@@ -109,6 +111,13 @@ async fn main() -> anyhow::Result<()> {
 
 async fn handler_crate_info(Path(id): Path<String>) -> Result<Json<CrateInfo>, StatusCode> {
     todo!()
+}
+
+async fn handler_graph(State(state): State<AppState>) -> Result<Json<DepGraphInfo>, StatusCode> {
+    Ok(Json(DepGraphInfo {
+        nodes: state.graph.node_weights().into_iter().cloned().map(Into::into).collect(),
+        edges: state.graph.edge_weights().cloned().map(Into::into).collect(),
+    }))
 }
 
 async fn handler_nodes(State(state): State<AppState>) -> Result<Json<DepGraphNodes>, StatusCode> {
