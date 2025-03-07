@@ -1,6 +1,6 @@
 import './style.css'
 import './graph.css'
-import { ExtensionCategory, Graph, NodeEvent, register } from '@antv/g6';
+import { ExtensionCategory, Graph, GraphEvent, NodeEvent, register } from '@antv/g6';
 import { DepNode } from './dep-node';
 import layouts from './layouts';
 
@@ -71,6 +71,15 @@ graph.on(NodeEvent.CLICK, (e: Event) => {
   let data = graph.getElementData(target.id);
   console.log(data);
 })
+
+graph.on(GraphEvent.BEFORE_LAYOUT, () => {
+  layoutElement.disabled = true;
+})
+
+graph.on(GraphEvent.AFTER_LAYOUT, () => {
+  layoutElement.disabled = false;
+})
+
 
 document.getElementById("reset")!.addEventListener("click", () => {
   graph.layout();
