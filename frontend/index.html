@@ -10,7 +10,18 @@
     <div id="app">
       <div id="topbar">
         <button id="reset">Reset</button>
-        <button id="layout">Cycle Layout</button>
+        <select id="layout">
+          <option value="radial">Radical</option>
+          <option value="mds">MDS</option>
+          <option value="force">Force</option>
+          <option value="antv-dagre">AntvDagre</option>
+          <option value="d3-force">D3 Force</option>
+          <option value="circular">Circular</option>
+          <option value="concentric">Concentric</option>
+          <option value="dagre">Dagre</option>
+          <option value="grid">Grid</option>
+          <option value="random">Random</option>
+        </select>
       </div>
       <div id="graph"></div>
       <div id="sidebar">
