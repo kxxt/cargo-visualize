@@ -27,7 +27,12 @@ const graph = new Graph({
       labelText: (d: any) => d.id,
       labelFontSize: 10,
       labelPlacement: 'center',
-      fill: "white",
+      fill: (node) => {
+        if (node.data?.is_ws_member)
+          return "cyan"
+        else
+          return "white"
+      },
       stroke: "#222",
       lineWidth: 1
     },
