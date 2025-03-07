@@ -14,6 +14,7 @@ const graphWidth = () => window.innerWidth - document.getElementById("sidebar")!
 register(ExtensionCategory.NODE, 'dep-node', DepNode)
 
 const layoutElement = document.getElementById("layout")! as HTMLSelectElement;
+const degreeElement = document.getElementById("select-degree")! as HTMLSelectElement;
 
 const graph = new Graph({
   container: 'graph',
@@ -54,7 +55,8 @@ const graph = new Graph({
     }
   },
   layout: layouts[layoutElement.value],
-  behaviors: ['drag-canvas', 'zoom-canvas', 'drag-element', 'click-select'],
+  behaviors: ['drag-canvas', 'zoom-canvas', 'drag-element',
+    { key: 'click-select', type: 'click-select', degree: parseInt(degreeElement.value) }],
 });
 
 graph.render();
@@ -80,4 +82,9 @@ document.getElementById("layout")!.addEventListener("change", (e) => {
   graph.setLayout(layouts[target.value])
   graph.layout()
   graph.render()
+})
+
+document.getElementById("select-degree")!.addEventListener("change", (e) => {
+  let target = e.target as any;
+  graph.updateBehavior({ key: "click-select", degree: parseInt(target.value) })
 })
