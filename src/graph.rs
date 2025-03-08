@@ -41,6 +41,7 @@ fn update_node(graph: &mut DepGraph, idx: NodeIndex<u16>) {
         if let Some(i) = &mut node_info {
             i.is_target_dep &= edge_info.is_target_dep;
             i.is_optional &= edge_info.is_optional;
+            i.combine_incoming(edge_info);
             i.kind.combine_incoming(edge_info.kind);
         } else {
             node_info = Some(edge_info);
@@ -67,7 +68,7 @@ fn update_node(graph: &mut DepGraph, idx: NodeIndex<u16>) {
         edge_info.visited = true;
         edge_info.is_target_dep |= node_info.is_target_dep;
         edge_info.is_optional |= node_info.is_optional;
-        edge_info.kind.update_outgoing(node_info.kind);
+        // edge_info.kind.update_outgoing(node_info.kind);
     }
 }
 

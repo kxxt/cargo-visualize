@@ -154,6 +154,9 @@ pub(crate) fn get_dep_graph(metadata: Metadata, config: &Config) -> anyhow::Resu
                     is_optional,
                     is_optional_direct: is_optional,
                     visited: false,
+                    is_dev: info.kind == MetaDepKind::Development,
+                    is_build: info.kind == MetaDepKind::Build,
+                    is_normal: info.kind == MetaDepKind::Normal,
                 };
                 let multiplicity = edge_multiplicity.entry((parent_idx, child_idx)).or_default();
                 graph.add_edge(
@@ -164,7 +167,7 @@ pub(crate) fn get_dep_graph(metadata: Metadata, config: &Config) -> anyhow::Resu
                         source: graph[parent_idx].id.clone(),
                         target: graph[child_idx].id.clone(),
                         edge_no: *multiplicity,
-                        inner
+                        inner,
                     },
                 );
                 *multiplicity += 1;

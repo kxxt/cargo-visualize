@@ -37,13 +37,18 @@ pub(crate) struct DepInfoInner {
     /// whether this edge has been updated by update_dep_info after being inserted into the graph
     // TODO: Store separately from DepInfo, make dedicated enum
     pub visited: bool,
+
+    pub is_dev: bool,
+    pub is_build: bool,
+    pub is_normal: bool,
 }
 
 impl DepInfoInner {
-    pub fn hash(&self) -> u64 {
-        let mut s = DefaultHasher::new();
-        Hash::hash(&self, &mut s);
-        s.finish()
+    /// Used to gather edge info into node
+    pub fn combine_incoming(&mut self, other: Self) {
+        self.is_build |= other.is_build;
+        self.is_dev |= other.is_dev;
+        self.is_normal |= other.is_normal;
     }
 }
 
@@ -84,17 +89,6 @@ impl DepKind {
         } else {
             self.host |= other.host;
             self.target |= other.target;
-        }
-    }
-
-    pub fn update_outgoing(&mut self, node_kind: Self) {
-        if node_kind == Self::UNKNOWN || *self == Self::UNKNOWN {
-            // do nothing
-        } else {
-            self.host = (self.target & node_kind.host)
-                | (self.host & node_kind.target)
-                | (self.host & node_kind.host);
-            self.target &= node_kind.target;
         }
     }
 

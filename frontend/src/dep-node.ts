@@ -1,4 +1,4 @@
-import { BaseNodeStyleProps, Rect } from '@antv/g6';
+import { BaseNodeStyleProps, NodeBadgeStyleProps, Rect, RectStyleProps } from '@antv/g6';
 import { Text as GText, Rect as GRect } from '@antv/g';
 
 import type { Group, TextStyleProps } from '@antv/g';
@@ -13,9 +13,6 @@ const measureText = (style: TextStyleProps) => {
 };
 
 export class DepNode extends Rect {
-    labelWidth: number = 0;
-    labelHeight: number = 0;
-
     protected drawTextShape(attrs: Required<BaseNodeStyleProps>, container: Group) {
         const [w, h] = this.getSize(attrs)
         // const label = this.upsert('text', GText, { text: this.id, x: 0, y: 10, fontSize: 10 }, container)!;
@@ -29,6 +26,42 @@ export class DepNode extends Rect {
         this.drawTextShape(attrs, container);
     }
 
+    protected getBadgesStyle(attributes: Required<RectStyleProps>): Record<string, NodeBadgeStyleProps | false> {
+        const data: any = this.context.graph.getNodeData(this.id).data;
+        const badgeStyle = super.getBadgesStyle(attributes)
+        const keyStyle = this.getKeyStyle(attributes);
+        const result: Record<string, NodeBadgeStyleProps | false> = badgeStyle;
+        if (data.dep_info.is_build) {
+            result.build = {
+                fontSize: 7,
+                text: "Build",
+                x: 0,
+                y: 20,
+                backgroundFill: "orange"
+            };
+        }
+        if (data.dep_info.is_dev) {
+            result.dev = {
+                fontSize: 7,
+                text: "Dev",
+                x: keyStyle.width - 8,
+                y: 0,
+                backgroundFill: "skyblue"
+            };
+        }
+        if (data.dep_info.is_normal) {
+            result.normal = {
+                x: 0,
+                y: 0,
+                fontSize: 7,
+                text: "Normal",
+                fill: "white",
+                backgroundFill: "purple"
+            };
+        }
+        return result
+    }
+
     getKeyStyle(attributes: Required<BaseNodeStyleProps>) {
         const data = this.context.graph.getNodeData(this.id);
         const keyStyle = super.getKeyStyle(attributes);
@@ -37,7 +70,7 @@ export class DepNode extends Rect {
             ...keyStyle,
             x: 0,
             y: 0,
-            width: width + 10,
+            width: Math.max(width + 10, 45),
             height: 20,
         };
     }

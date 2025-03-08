@@ -40,7 +40,8 @@ const graph = new Graph({
           return "white"
       },
       stroke: "#222",
-      lineWidth: 1
+      lineWidth: 1,
+      badge: true
     },
     state: {
       "selected": {
@@ -49,7 +50,7 @@ const graph = new Graph({
         labelFontSize: 10,
         labelFontFamily,
         labelShadowColor: "red",
-        labelTextDecorationColor: "red"
+        labelTextDecorationColor: "red",
       }
     }
   },
