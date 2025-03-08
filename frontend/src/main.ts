@@ -4,6 +4,7 @@ import { ExtensionCategory, Graph, GraphEvent, NodeEvent, register } from '@antv
 import { DepNode } from './dep-node';
 import layouts from './layouts';
 import { DepEdge } from './dep-edge';
+import { labelText } from './pure';
 
 let loaded = false;
 
@@ -25,7 +26,7 @@ const graph = new Graph({
   node: {
     type: "dep-node",
     style: {
-      labelText: (d: any) => d.data.name_uses > 1 ? d.id : d.data.name,
+      labelText,
       labelFontSize: 10,
       labelPlacement: 'center',
       fill: (node) => {
