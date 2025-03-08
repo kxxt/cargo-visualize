@@ -31,8 +31,11 @@ const graph = new Graph({
       labelFontSize: 10,
       labelPlacement: 'center',
       fill: (node) => {
-        if (node.data?.is_ws_member)
+        let data: any = node.data
+        if (data?.is_ws_member)
           return "cyan"
+        else if (data?.dep_info!.is_target_dep)
+          return "grey"
         else
           return "white"
       },

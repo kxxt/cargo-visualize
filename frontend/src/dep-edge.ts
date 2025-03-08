@@ -32,7 +32,7 @@ export class DepEdge extends BaseEdge {
             ];
         } else {
             const odd = data.edge_no % 2
-            const offset = (1 - odd * 2) * ((data.edge_no + odd)/2) * curveOffset;
+            const offset = (1 - odd * 2) * ((data.edge_no + odd) / 2) * curveOffset;
             const controlPoint = attributes.controlPoint
                 || getCurveControlPoint(sourcePoint, targetPoint, curvePosition, offset);
             return getQuadraticPath(sourcePoint, targetPoint, controlPoint);
@@ -44,7 +44,10 @@ export class DepEdge extends BaseEdge {
         return {
             ...super.getKeyStyle(attributes),
             lineWidth: 2,
-            lineDash: data!.is_optional ? 2 : 0,
+            lineDash: (
+                data.is_optional_direct ? 1 :
+                    (data.is_optional ? 3 : 0)
+            ),
             stroke: data!.edge_no > 0 ? "red" : "blue"
         }
     }

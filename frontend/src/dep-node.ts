@@ -30,8 +30,9 @@ export class DepNode extends Rect {
     }
 
     getKeyStyle(attributes: Required<BaseNodeStyleProps>) {
+        const data = this.context.graph.getNodeData(this.id);
         const keyStyle = super.getKeyStyle(attributes);
-        const width = measureText({ text: labelText(this.context.graph.getNodeData(this.id)), fontSize: 10, fontFamily: labelFontFamily })
+        const width = measureText({ text: labelText(data), fontSize: 10, fontFamily: labelFontFamily })
         return {
             ...keyStyle,
             x: 0,
