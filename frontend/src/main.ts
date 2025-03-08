@@ -25,7 +25,7 @@ const graph = new Graph({
   node: {
     type: "dep-node",
     style: {
-      labelText: (d: any) => d.id,
+      labelText: (d: any) => d.data.name_uses > 1 ? d.id : d.data.name,
       labelFontSize: 10,
       labelPlacement: 'center',
       fill: (node) => {
