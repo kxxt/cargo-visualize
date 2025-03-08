@@ -3,6 +3,7 @@ import { Text as GText, Rect as GRect } from '@antv/g';
 
 import type { Group, TextStyleProps } from '@antv/g';
 import { labelText } from './pure';
+import { labelFontFamily } from './constants';
 
 let textShape: GText;
 const measureText = (style: TextStyleProps) => {
@@ -30,7 +31,7 @@ export class DepNode extends Rect {
 
     getKeyStyle(attributes: Required<BaseNodeStyleProps>) {
         const keyStyle = super.getKeyStyle(attributes);
-        const width = measureText({ text: labelText(this.context.graph.getNodeData(this.id)), fontSize: 10, fontFamily: "system-ui" })
+        const width = measureText({ text: labelText(this.context.graph.getNodeData(this.id)), fontSize: 10, fontFamily: labelFontFamily })
         return {
             ...keyStyle,
             x: 0,

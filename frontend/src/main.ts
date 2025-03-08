@@ -5,6 +5,7 @@ import { DepNode } from './dep-node';
 import layouts from './layouts';
 import { DepEdge } from './dep-edge';
 import { labelText } from './pure';
+import { labelFontFamily } from './constants';
 
 let loaded = false;
 
@@ -43,6 +44,7 @@ const graph = new Graph({
         stroke: "orange",
         strokeWidth: 2,
         labelFontSize: 10,
+        labelFontFamily,
         labelShadowColor: "red",
         labelTextDecorationColor: "red"
       }
