@@ -15,6 +15,7 @@ pub(crate) struct DepInfo {
     pub id: String,
     pub source: String,
     pub target: String,
+    pub edge_no: u32,
     #[serde(flatten)]
     pub inner: DepInfoInner,
 }

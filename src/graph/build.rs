@@ -6,6 +6,7 @@ use std::{
 use anyhow::Context;
 use cargo_metadata::{DependencyKind as MetaDepKind, Metadata, Package as MetaPackage, PackageId};
 use nanoid::nanoid;
+use petgraph::prelude::NodeIndex;
 
 use super::DepGraph;
 use crate::{
@@ -30,6 +31,9 @@ pub(crate) fn get_dep_graph(metadata: Metadata, config: &Config) -> anyhow::Resu
 
     // Queue of packages whose dependencies still need to be added to the graph.
     let mut deps_add_queue = VecDeque::new();
+
+    // Calculate the multiplicity of edge.
+    let mut edge_multiplicity: HashMap<(NodeIndex<u16>, NodeIndex<u16>), u32> = HashMap::new();
 
     // Add roots
     for pkg_id in &metadata.workspace_members {
@@ -151,6 +155,7 @@ pub(crate) fn get_dep_graph(metadata: Metadata, config: &Config) -> anyhow::Resu
                     is_optional_direct: is_optional,
                     visited: false,
                 };
+                let multiplicity = edge_multiplicity.entry((parent_idx, child_idx)).or_default();
                 graph.add_edge(
                     parent_idx,
                     child_idx,
@@ -158,9 +163,11 @@ pub(crate) fn get_dep_graph(metadata: Metadata, config: &Config) -> anyhow::Resu
                         id: nanoid!(),
                         source: graph[parent_idx].id.clone(),
                         target: graph[child_idx].id.clone(),
-                        inner,
+                        edge_no: *multiplicity,
+                        inner
                     },
                 );
+                *multiplicity += 1;
             }
         }
     }
