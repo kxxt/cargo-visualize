@@ -4,6 +4,7 @@ import { mergeOptions } from '@antv/g6/lib/utils/style';
 
 import type { DisplayObjectConfig } from '@antv/g';
 import type { BaseEdgeStyleProps, LineStyleProps, PathArray, Quadratic, QuadraticStyleProps } from '@antv/g6';
+import { buildDepColor, devDepColor, normalDepColor } from './constants';
 
 export interface DepEdgeStyleProps extends LineStyleProps, QuadraticStyleProps {
 
@@ -48,7 +49,11 @@ export class DepEdge extends BaseEdge {
                 data.is_optional_direct ? 1 :
                     (data.is_optional ? 3 : 0)
             ),
-            stroke: data!.edge_no > 0 ? "red" : "blue"
+            stroke: data.is_dev ? devDepColor : (
+                data.is_build ? buildDepColor : (
+                    data.is_normal ? normalDepColor : "black"
+                )
+            )
         }
     }
 }

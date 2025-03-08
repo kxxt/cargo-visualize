@@ -3,7 +3,7 @@ import { Text as GText, Rect as GRect } from '@antv/g';
 
 import type { Group, TextStyleProps } from '@antv/g';
 import { labelText } from './pure';
-import { labelFontFamily } from './constants';
+import { buildDepColor, devDepColor, labelFontFamily, normalDepColor } from './constants';
 
 let textShape: GText;
 const measureText = (style: TextStyleProps) => {
@@ -37,7 +37,7 @@ export class DepNode extends Rect {
                 text: "Build",
                 x: 0,
                 y: 20,
-                backgroundFill: "orange"
+                backgroundFill: buildDepColor
             };
         }
         if (data.dep_info.is_dev) {
@@ -46,7 +46,7 @@ export class DepNode extends Rect {
                 text: "Dev",
                 x: keyStyle.width - 8,
                 y: 0,
-                backgroundFill: "skyblue"
+                backgroundFill: devDepColor
             };
         }
         if (data.dep_info.is_normal) {
@@ -56,7 +56,7 @@ export class DepNode extends Rect {
                 fontSize: 7,
                 text: "Normal",
                 fill: "white",
-                backgroundFill: "purple"
+                backgroundFill: normalDepColor
             };
         }
         return result
