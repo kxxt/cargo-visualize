@@ -1,4 +1,4 @@
-import { BaseNodeStyleProps, Circle, Rect, subStyleProps } from '@antv/g6';
+import { BaseNodeStyleProps, Rect} from '@antv/g6';
 import { Text as GText, Rect as GRect } from '@antv/g';
 
 import type { Group, TextStyleProps } from '@antv/g';
@@ -39,3 +39,4 @@ export class DepNode extends Rect {
         };
     }
 }
+

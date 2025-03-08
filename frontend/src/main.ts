@@ -3,6 +3,7 @@ import './graph.css'
 import { ExtensionCategory, Graph, GraphEvent, NodeEvent, register } from '@antv/g6';
 import { DepNode } from './dep-node';
 import layouts from './layouts';
+import { DepEdge } from './dep-edge';
 
 let loaded = false;
 
@@ -10,11 +11,11 @@ let data = await fetch("http://127.0.0.1:3000/graph").then(res => res.json());
 
 const graphWidth = () => window.innerWidth - document.getElementById("sidebar")!.clientWidth;
 
-
-register(ExtensionCategory.NODE, 'dep-node', DepNode)
-
 const layoutElement = document.getElementById("layout")! as HTMLSelectElement;
 const degreeElement = document.getElementById("select-degree")! as HTMLSelectElement;
+
+register(ExtensionCategory.NODE, 'dep-node', DepNode)
+register(ExtensionCategory.EDGE, 'dep-edge', DepEdge)
 
 const graph = new Graph({
   container: 'graph',
@@ -47,6 +48,7 @@ const graph = new Graph({
     }
   },
   edge: {
+    type: "dep-edge",
     style: {
       endArrow: true,
       endArrowSize: 7,
@@ -63,6 +65,9 @@ const graph = new Graph({
   behaviors: ['drag-canvas', 'zoom-canvas', 'drag-element',
     { key: 'click-select', type: 'click-select', degree: parseInt(degreeElement.value) }],
 });
+
+// @ts-ignore
+globalThis.graph = graph;
 
 graph.render();
 
