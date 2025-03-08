@@ -15,6 +15,8 @@ const graphWidth = () => window.innerWidth - document.getElementById("sidebar")!
 
 const layoutElement = document.getElementById("layout")! as HTMLSelectElement;
 const degreeElement = document.getElementById("select-degree")! as HTMLSelectElement;
+const searchElement = document.getElementById("search")! as HTMLInputElement;
+const searchResultElements = new Set<string>();
 
 register(ExtensionCategory.NODE, 'dep-node', DepNode)
 register(ExtensionCategory.EDGE, 'dep-edge', DepEdge)
@@ -46,11 +48,15 @@ const graph = new Graph({
     state: {
       "selected": {
         stroke: "orange",
-        strokeWidth: 2,
+        lineWidth: 4,
         labelFontSize: 10,
         labelFontFamily,
-        labelShadowColor: "red",
-        labelTextDecorationColor: "red",
+      },
+      "search-result": {
+        stroke: "green",
+        lineWidth: 4,
+        labelFontSize: 10,
+        labelFontFamily,
       }
     }
   },
@@ -71,6 +77,12 @@ const graph = new Graph({
   layout: layouts[layoutElement.value],
   behaviors: ['drag-canvas', 'zoom-canvas', 'drag-element',
     { key: 'click-select', type: 'click-select', degree: parseInt(degreeElement.value) }],
+  plugins: [
+    {
+      type: 'minimap',
+      size: [240, 160],
+    },
+  ],
 });
 
 // @ts-ignore
@@ -104,7 +116,6 @@ document.getElementById("reset")!.addEventListener("click", () => {
 
 document.getElementById("layout")!.addEventListener("change", (e) => {
   let target = e.target as any;
-  console.log(target.value)
   graph.setLayout(layouts[target.value])
   graph.layout()
   graph.render()
@@ -114,3 +125,25 @@ document.getElementById("select-degree")!.addEventListener("change", (e) => {
   let target = e.target as any;
   graph.updateBehavior({ key: "click-select", degree: parseInt(target.value) })
 })
+
+document.getElementById("search")!.addEventListener("keyup", (e) => {
+  let target = e.target as any;
+  // Clear states
+  for (let id of searchResultElements) {
+    graph.setElementState(id, graph.getElementState(id).filter(x => x !== "search-result"))
+  }
+  if (!target.value)
+    return;
+  // Update states
+  graph.getNodeData().forEach((v) => {
+    let name: string = v.data?.name as string;
+    if (name.includes(target.value)) {
+      searchResultElements.add(v.id);
+      const states = graph.getElementState(v.id)
+      states.unshift('search-result')
+      graph.setElementState(v.id, states)
+    }
+  })
+})
+
+window.addEventListener("load", () => searchElement.value = '')
