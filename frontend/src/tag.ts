@@ -20,6 +20,10 @@ export function insertTag(kind: string | null, value: string, container: HTMLEle
     container.appendChild(createTag(kind, value))
 }
 
+export function insertRawTag(kind: string | null, value: string, container: HTMLElement) {
+    container.appendChild(createRawTag(kind, value))
+}
+
 export function insertBadge(kind: string | null, key: string, value: string, container: HTMLElement) {
     let ele = document.createElement("div")
     ele.className = `tags has-addons`

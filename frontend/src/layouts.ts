@@ -51,7 +51,6 @@ export default {
         unitRadius: 100,
         linkDistance: 300,
         preventOverlap: true,
-        maxPreventOverlapIteration: 120,
         strictRadial: true,
     },
     "random": {
