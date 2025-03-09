@@ -37,6 +37,7 @@ h1 {
 
 #graph {
   height: 100%;
+  width: calc(100vw - 20rem);
   grid-row: 2;
   align-self: stretch;
   background-color: antiquewhite;
@@ -58,5 +59,4 @@ h1 {
   grid-column: 2;
   width: 20rem;
   align-self: stretch;
-  background-color: yellow;
 }
