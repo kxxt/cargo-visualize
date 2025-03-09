@@ -110,6 +110,9 @@ graph.on(NodeEvent.CLICK, (e: Event) => {
   infoSubheading.innerText = `version ${data.version}`
   // Tags
   clearTags(infoTags)
+  if (data.is_ws_member) {
+    insertTag("primary", "Workspace", infoTags)
+  }
   if (data.dep_info.is_dev) {
     insertTag("warning", "Dev", infoTags)
   }
@@ -118,6 +121,15 @@ graph.on(NodeEvent.CLICK, (e: Event) => {
   }
   if (data.dep_info.is_normal) {
     insertTag("link", "Normal", infoTags)
+  }
+  if (data.dep_info.is_target_dep) {
+    insertTag("success", "Target Specific", infoTags)
+  }
+  if (data.dep_info.is_optional) {
+    insertTag("white", "Optional", infoTags)
+  }
+  if (data.is_proc_macro) {
+    insertTag("danger", "proc-macro", infoTags)
   }
   console.log(data);
 })
