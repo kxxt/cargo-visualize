@@ -18,6 +18,8 @@ const layoutElement = document.getElementById("layout")! as HTMLSelectElement;
 const resetElement = document.getElementById("reset")! as HTMLSelectElement;
 const degreeElement = document.getElementById("select-degree")! as HTMLSelectElement;
 const searchElement = document.getElementById("search")! as HTMLInputElement;
+const infoHeading = document.getElementById("info-heading")!;
+const infoSubheading = document.getElementById("info-subheading")!;
 const searchResultElements = new Set<string>();
 
 register(ExtensionCategory.NODE, 'dep-node', DepNode)
@@ -99,7 +101,10 @@ window.addEventListener("resize", (ev) => {
 
 graph.on(NodeEvent.CLICK, (e: Event) => {
   let target = e.target as any;
-  let data = graph.getElementData(target.id);
+  let node = graph.getElementData(target.id);
+  let data: any = node.data
+  infoHeading.innerText = `Crate ${data.name}`
+  infoSubheading.innerText = `version ${data.version}`
   console.log(data);
 })
 
