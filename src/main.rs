@@ -3,7 +3,7 @@ use std::{iter, sync::Arc};
 use axum::{
     extract::{Path, State},
     http::StatusCode,
-    routing::get,
+    routing::{get, post},
     Json, Router,
 };
 use cargo_metadata::{MetadataCommand, Package};
@@ -94,6 +94,7 @@ async fn main() -> anyhow::Result<()> {
     };
     let app = Router::new()
         .route("/package/{id}", get(handler_crate_info))
+        .route("/open/{id}/{field}", post(handler_open))
         .route("/nodes", get(handler_nodes))
         .route("/edges", get(handler_edges))
         .route("/graph", get(handler_graph))
@@ -106,6 +107,34 @@ async fn main() -> anyhow::Result<()> {
     axum::serve(listener, app).await.unwrap();
 
     Ok(())
+}
+
+async fn handler_open(
+    State(state): State<AppState>,
+    Path((id, field)): Path<(String, String)>,
+) -> StatusCode {
+    let Some(pkg) = state.depmap.get(&id) else {
+        return StatusCode::NOT_FOUND;
+    };
+    let Some(basedir) = pkg.manifest_path.parent() else {
+        return StatusCode::IM_A_TEAPOT;
+    };
+    let Some(path) = (match field.as_str() {
+        "manifest_path" => Some(basedir.to_owned()),
+        "readme" => pkg.readme(),
+        "license" => pkg.license_file(),
+        _ => return StatusCode::BAD_REQUEST,
+    }) else {
+        return StatusCode::BAD_REQUEST;
+    };
+    let path = path.as_std_path();
+    match open::that_detached(path) {
+        Ok(_) => StatusCode::OK,
+        Err(e) => {
+            eprintln!("Failed to open {}: {e}", path.display());
+            StatusCode::INTERNAL_SERVER_ERROR
+        }
+    }
 }
 
 async fn handler_crate_info(

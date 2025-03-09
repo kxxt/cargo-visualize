@@ -193,8 +193,17 @@ function openFieldMapper(id: string) {
     ele.href = `javascript:`;
     ele.onclick = () => {
       console.log(`opening ${field} for ${id}`);
-      // POST
-      `${ENDPOINT}/open/${id}/${field}`
+      const fail = () => alert(`Failed to open ${field} for ${id}, please check the console of cargo-visualize for more details`);
+      const req = new Request(`${ENDPOINT}/open/${id}/${field}`, {
+        method: "POST"
+      });
+      fetch(req).catch(fail).then(
+        (resp) => {
+          if (!resp?.ok) {
+            fail()
+          }
+        }
+      )
     }
     return ele
   }

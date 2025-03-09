@@ -18,6 +18,7 @@ cargo_metadata = "0.19"
 cfg-if = "1.0.0"
 clap = "4.0.18"
 nanoid = "0.4.0"
+open = "5.3.2"
 petgraph = { version = "0.7", default-features = false, features = ["stable_graph"] }
 serde = { version = "1.0.218", features = ["derive"] }
 tokio = { version = "1.43.0", features = ["macros"] }
