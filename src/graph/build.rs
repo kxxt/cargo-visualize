@@ -8,7 +8,7 @@ use cargo_metadata::{DependencyKind as MetaDepKind, Metadata, Package as MetaPac
 use nanoid::nanoid;
 use petgraph::prelude::NodeIndex;
 
-use super::DepGraph;
+use super::{DepGraph, DepMap};
 use crate::{
     cli::Config,
     dep_info::{DepInfo, DepInfoInner, DepKind},
@@ -16,7 +16,10 @@ use crate::{
     util::is_proc_macro,
 };
 
-pub(crate) fn get_dep_graph(metadata: Metadata, config: &Config) -> anyhow::Result<DepGraph> {
+pub(crate) fn get_dep_graph(
+    metadata: Metadata,
+    config: &Config,
+) -> anyhow::Result<(DepGraph, DepMap)> {
     let resolve = metadata
         .resolve
         .context("Couldn't obtain dependency graph. Your cargo version may be too old.")?;
@@ -25,6 +28,7 @@ pub(crate) fn get_dep_graph(metadata: Metadata, config: &Config) -> anyhow::Resu
         resolve.nodes.len(),
         resolve.nodes.iter().map(|n| n.deps.len()).sum(),
     );
+    let mut depmap = HashMap::new();
 
     // Map from PackageId to graph node index.
     let mut node_indices = HashMap::new();
@@ -51,7 +55,9 @@ pub(crate) fn get_dep_graph(metadata: Metadata, config: &Config) -> anyhow::Resu
             continue;
         }
 
-        let node_idx = graph.add_node(Package::new(pkg, true));
+        let node_weight = Package::new(pkg, true);
+        depmap.insert(node_weight.id.clone(), pkg.to_owned());
+        let node_idx = graph.add_node(node_weight);
         deps_add_queue.push_back((pkg_id.clone(), 0_u32));
         let old_val = node_indices.insert(pkg_id.clone(), node_idx);
         assert!(old_val.is_none());
@@ -101,16 +107,17 @@ pub(crate) fn get_dep_graph(metadata: Metadata, config: &Config) -> anyhow::Resu
                         continue;
                     }
 
-                    let dep_pkg = &get_package(&metadata.packages, &dep.pkg);
-                    let dep_pkg = Package::new(dep_pkg, is_workspace_member);
+                    let dep_pkg = get_package(&metadata.packages, &dep.pkg);
+                    let dep_pkg_weight = Package::new(dep_pkg, is_workspace_member);
 
                     // proc-macros are a bit weird because Cargo doesn't report
                     // them as build dependencies when really they are.
-                    if !config.build_deps && dep_pkg.is_proc_macro {
+                    if !config.build_deps && dep_pkg_weight.is_proc_macro {
                         continue;
                     }
 
-                    let idx = graph.add_node(dep_pkg);
+                    depmap.insert(dep_pkg_weight.id.clone(), dep_pkg.to_owned());
+                    let idx = graph.add_node(dep_pkg_weight);
 
                     deps_add_queue.push_back((dep.pkg.clone(), depth + 1));
 
@@ -175,7 +182,7 @@ pub(crate) fn get_dep_graph(metadata: Metadata, config: &Config) -> anyhow::Resu
         }
     }
 
-    Ok(graph)
+    Ok((graph, depmap))
 }
 
 fn get_package<'a>(packages: &'a [MetaPackage], pkg_id: &PackageId) -> &'a MetaPackage {

@@ -1,4 +1,4 @@
-use std::{iter, rc::Rc, sync::Arc};
+use std::{iter, sync::Arc};
 
 use axum::{
     extract::{Path, State},
@@ -6,12 +6,10 @@ use axum::{
     routing::get,
     Json, Router,
 };
-use cargo_metadata::MetadataCommand;
+use cargo_metadata::{MetadataCommand, Package};
 use cfg_if::cfg_if;
-use dep_info::CrateInfo;
 use dto::{DepGraphEdges, DepGraphInfo, DepGraphNodes};
-use graph::DepGraph;
-use petgraph::visit::IntoEdges;
+use graph::{DepGraph, DepMap};
 use tower_http::{cors::CorsLayer, services::ServeDir};
 
 // `DepInfo` represents the data associated with dependency graph edges
@@ -39,6 +37,7 @@ use self::{
 #[derive(Clone)]
 struct AppState {
     graph: Arc<DepGraph>,
+    depmap: Arc<DepMap>,
 }
 
 #[tokio::main(flavor = "current_thread")]
@@ -73,7 +72,7 @@ async fn main() -> anyhow::Result<()> {
 
     let metadata = cmd.other_options(other_options).exec()?;
 
-    let mut graph = get_dep_graph(metadata, &config)?;
+    let (mut graph, depmap) = get_dep_graph(metadata, &config)?;
     update_dep_info(&mut graph);
     if !config.focus.is_empty() {
         remove_irrelevant_deps(&mut graph, &config.focus);
@@ -94,13 +93,13 @@ async fn main() -> anyhow::Result<()> {
         }
     };
     let app = Router::new()
-        .route("/crate/{id}", get(handler_crate_info))
+        .route("/package/{id}", get(handler_crate_info))
         .route("/nodes", get(handler_nodes))
         .route("/edges", get(handler_edges))
         .route("/graph", get(handler_graph))
         .fallback_service(ServeDir::new("frontend/dist"))
         .layer(cors)
-        .with_state(AppState { graph: Arc::new(graph) });
+        .with_state(AppState { graph: Arc::new(graph), depmap: Arc::new(depmap) });
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await.unwrap();
     println!("listening on {}", listener.local_addr().unwrap());
@@ -109,8 +108,15 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-async fn handler_crate_info(Path(id): Path<String>) -> Result<Json<CrateInfo>, StatusCode> {
-    todo!()
+async fn handler_crate_info(
+    State(state): State<AppState>,
+    Path(id): Path<String>,
+) -> Result<Json<Package>, StatusCode> {
+    if let Some(pkg) = state.depmap.get(&id) {
+        Ok(Json(pkg.clone()))
+    } else {
+        Err(StatusCode::NOT_FOUND)
+    }
 }
 
 async fn handler_graph(State(state): State<AppState>) -> Result<Json<DepGraphInfo>, StatusCode> {

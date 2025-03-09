@@ -1,4 +1,4 @@
-use std::collections::VecDeque;
+use std::collections::{HashMap, VecDeque};
 
 use petgraph::{
     algo::all_simple_paths,
@@ -6,13 +6,17 @@ use petgraph::{
     Direction,
 };
 
-use crate::{dep_info::{DepInfo, DepInfoInner}, package::Package};
+use crate::{
+    dep_info::{DepInfo, DepInfoInner},
+    package::Package,
+};
 
 mod build;
 
 pub(crate) use build::get_dep_graph;
 
 pub(crate) type DepGraph = StableDiGraph<Package, DepInfo, u16>;
+pub(crate) type DepMap = HashMap<String, cargo_metadata::Package>;
 
 pub(crate) fn update_dep_info(graph: &mut DepGraph) {
     for idx in graph.node_indices().collect::<Vec<_>>() {
