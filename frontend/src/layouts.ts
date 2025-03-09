@@ -26,7 +26,8 @@ export default {
     },
     "circular": {
         type: "circular",
-        nodeSize: 100
+        nodeSize: 40,
+        nodeSpacing: 0.1
     },
     "concentric": {
         type: "concentric",
