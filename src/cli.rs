@@ -25,11 +25,11 @@ pub(crate) struct Config {
 }
 
 pub(crate) fn parse_options() -> Config {
-    let matches = Command::new("cargo-depgraph")
+    let matches = Command::new("cargo-visualize")
         .bin_name("cargo")
         .version(env!("CARGO_PKG_VERSION"))
         .subcommand(
-            Command::new("depgraph")
+            Command::new("visualize")
                 .arg(Arg::new("all_deps").long("all-deps").action(ArgAction::SetTrue).help(
                     "Include all dependencies in the graph \
                      (shorthand for --build-deps --dev-deps --target-deps)",
@@ -194,7 +194,7 @@ pub(crate) fn parse_options() -> Config {
         )
         .get_matches();
 
-    let matches = matches.subcommand_matches("depgraph").unwrap();
+    let matches = matches.subcommand_matches("visualize").unwrap();
 
     let all_deps = matches.get_flag("all_deps");
     let build_deps = all_deps || matches.get_flag("build_deps");

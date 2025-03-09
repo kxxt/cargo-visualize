@@ -10,7 +10,7 @@ use cargo_metadata::{MetadataCommand, Package};
 use cfg_if::cfg_if;
 use dto::{DepGraphEdges, DepGraphInfo, DepGraphNodes};
 use graph::{DepGraph, DepMap};
-use tower_http::{cors::CorsLayer, services::ServeDir};
+use tower_http::cors::CorsLayer;
 
 // `DepInfo` represents the data associated with dependency graph edges
 mod dep_info;
@@ -25,6 +25,10 @@ mod util;
 
 // Command-line parsing
 mod cli;
+
+// Embeded assets
+#[cfg(embed)]
+mod assets;
 
 use self::{
     cli::parse_options,
@@ -92,17 +96,28 @@ async fn main() -> anyhow::Result<()> {
             let cors = CorsLayer::new();
         }
     };
-    let app = Router::new()
+
+    let mut app = Router::new()
         .route("/package/{id}", get(handler_crate_info))
         .route("/open/{id}/{field}", post(handler_open))
         .route("/nodes", get(handler_nodes))
         .route("/edges", get(handler_edges))
         .route("/graph", get(handler_graph))
-        .fallback_service(ServeDir::new("frontend/dist"))
         .layer(cors)
         .with_state(AppState { graph: Arc::new(graph), depmap: Arc::new(depmap) });
 
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await.unwrap();
+    cfg_if! {
+        if #[cfg(embed)] {
+            app = app
+                .route("/", get(assets::handler_index))
+                .route("/crab.svg", get(assets::static_handler))
+                .route("/assets/{*file}", get(assets::static_handler))
+        } else {
+            app = app.fallback_service(tower_http::services::ServeDir::new("frontend/dist"))
+        }
+    };
+
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:3003").await.unwrap();
     println!("listening on {}", listener.local_addr().unwrap());
     axum::serve(listener, app).await.unwrap();
 

@@ -17,12 +17,18 @@ base64 = "0.22.1"
 cargo_metadata = "0.19"
 cfg-if = "1.0.0"
 clap = "4.0.18"
+mime_guess = { version = "2.0.5", optional = true }
 nanoid = "0.4.0"
 open = "5.3.2"
 petgraph = { version = "0.7", default-features = false, features = ["stable_graph"] }
+rust-embed = "8.6.0"
 serde = { version = "1.0.218", features = ["derive"] }
 tokio = { version = "1.43.0", features = ["macros"] }
 tower-http = { version = "0.6.2", features = ["fs","cors"] }
+
+[features]
+default = ["embed"]
+embed = ["dep:mime_guess"]
 
 [lints.rust]
 rust_2018_idioms = { level = "warn", priority = -1 }
@@ -48,3 +54,6 @@ todo = "warn"
 unreadable_literal = "warn"
 unseparated_literal_suffix = "warn"
 wildcard_imports = "warn"
+
+[build-dependencies]
+cfg-if = "1.0.0"
