@@ -11,7 +11,7 @@ pub struct DepGraphNode {
 impl From<Package> for DepGraphNode {
     fn from(mut package: Package) -> Self {
         // We do not serialize id in package, instead it is serialized here.
-        Self { id: std::mem::replace(&mut package.id, Default::default()), data: package }
+        Self { id: std::mem::take(&mut package.id), data: package }
     }
 }
 
@@ -32,7 +32,7 @@ impl From<DepInfo> for DepGraphEdge {
     fn from(mut value: DepInfo) -> Self {
         // We do not serialize id in DepInfo, instead it is serialized here.
         Self {
-            id: std::mem::replace(&mut value.id, Default::default()),
+            id: std::mem::take(&mut value.id),
             source: value.source.clone(),
             target: value.target.clone(),
             data: value,

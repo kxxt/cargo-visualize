@@ -1,7 +1,5 @@
 use std::{
-    cell::Cell,
     fmt::{self, Debug, Formatter},
-    rc::Rc,
     sync::{
         atomic::{AtomicU16, Ordering},
         Arc,
@@ -12,7 +10,7 @@ use cargo_metadata::{semver::Version, Package as MetaPackage};
 use serde::{Serialize, Serializer};
 
 use crate::{
-    dep_info::{DepInfo, DepInfoInner, DepKind},
+    dep_info::{DepInfoInner, DepKind},
     util::is_proc_macro,
 };
 

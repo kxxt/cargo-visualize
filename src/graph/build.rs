@@ -1,7 +1,4 @@
-use std::{
-    collections::{hash_map::Entry as HashMapEntry, HashMap, VecDeque},
-    hash::{DefaultHasher, Hash},
-};
+use std::collections::{hash_map::Entry as HashMapEntry, HashMap, VecDeque};
 
 use anyhow::Context;
 use cargo_metadata::{DependencyKind as MetaDepKind, Metadata, Package as MetaPackage, PackageId};

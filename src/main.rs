@@ -150,14 +150,14 @@ async fn handler_crate_info(
 
 async fn handler_graph(State(state): State<AppState>) -> Result<Json<DepGraphInfo>, StatusCode> {
     Ok(Json(DepGraphInfo {
-        nodes: state.graph.node_weights().into_iter().cloned().map(Into::into).collect(),
+        nodes: state.graph.node_weights().cloned().map(Into::into).collect(),
         edges: state.graph.edge_weights().cloned().map(Into::into).collect(),
     }))
 }
 
 async fn handler_nodes(State(state): State<AppState>) -> Result<Json<DepGraphNodes>, StatusCode> {
     Ok(Json(DepGraphNodes {
-        values: state.graph.node_weights().into_iter().cloned().map(Into::into).collect(),
+        values: state.graph.node_weights().cloned().map(Into::into).collect(),
     }))
 }
 

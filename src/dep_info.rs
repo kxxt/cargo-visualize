@@ -61,11 +61,16 @@ impl DepKind {
     pub const DEV: Self = Self { host: BuildFlag::Never, target: BuildFlag::Test };
 
     // or dev of build
+    #[allow(unused)]
     pub const BUILD_OF_DEV: Self = Self { host: BuildFlag::Test, target: BuildFlag::Never };
+    #[allow(unused)]
     pub const NORMAL_AND_BUILD: Self = Self { host: BuildFlag::Always, target: BuildFlag::Always };
+    #[allow(unused)]
     pub const DEV_AND_BUILD: Self = Self { host: BuildFlag::Always, target: BuildFlag::Test };
+    #[allow(unused)]
     pub const NORMAL_AND_BUILD_OF_DEV: Self =
         Self { host: BuildFlag::Test, target: BuildFlag::Always };
+    #[allow(unused)]
     pub const DEV_AND_BUILD_OF_DEV: Self = Self { host: BuildFlag::Test, target: BuildFlag::Test };
 
     pub const UNKNOWN: Self = Self { host: BuildFlag::Never, target: BuildFlag::Never };
