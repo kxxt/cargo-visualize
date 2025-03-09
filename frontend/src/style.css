@@ -40,7 +40,6 @@ h1 {
   width: calc(100vw - 20rem);
   grid-row: 2;
   align-self: stretch;
-  background-color: antiquewhite;
 }
 
 #topbar {
