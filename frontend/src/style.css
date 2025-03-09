@@ -7,6 +7,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --topbar-height: calc(2rem + var(--bulma-control-padding-vertical))
 }
 
 a {
@@ -21,6 +22,7 @@ a:hover {
 
 body {
   height: 100vh;
+  overflow: hidden;
   margin: 0;
 }
 
@@ -31,9 +33,9 @@ h1 {
 
 #app {
   display: grid;
-  grid: calc(2rem + var(--bulma-control-padding-vertical)) auto / auto auto;
+  grid: var(--topbar-height) auto / auto auto;
   width: 100%;
-  min-height: 100vh;
+  height: 100%;
 }
 
 #graph {
@@ -55,12 +57,21 @@ h1 {
 }
 
 #sidebar {
+  display: flex;
+  flex-direction: column;
   grid-row: 2;
   grid-column: 2;
   width: 20rem;
   align-self: stretch;
+  height: calc(100vh - var(--topbar-height));
+}
+
+.scrollable-container {
+  flex-grow: 1;
+  overflow: scroll;
 }
 
 #info-table {
   text-overflow: ellipsis;
+  align-self: flex-start;
 }

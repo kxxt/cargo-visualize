@@ -157,12 +157,14 @@ graph.on(NodeEvent.CLICK, async (e: Event) => {
     hideElement(infoDescription)
   }
   handleLicense(meta, target.id)
+  handleFeatures(meta)
+  handleAuthors(meta)
   handlePlainField(meta, 'source')
   handlePlainField(meta, 'homepage', urlMapField)
   handlePlainField(meta, 'repository', urlMapField)
   handlePlainField(meta, 'documentation', urlMapField)
-  handlePlainField(meta, 'keywords', tagsMaperField('primary'))
-  handlePlainField(meta, 'categories', tagsMaperField('warning'))
+  handlePlainField(meta, 'keywords', tagsFieldMaper('primary'))
+  handlePlainField(meta, 'categories', tagsFieldMaper('warning'))
   handlePlainField(meta, 'links')
   handlePlainField(meta, 'manifest_path', openFieldMapper(target.id))
   handlePlainField(meta, 'readme', openFieldMapper(target.id))
@@ -191,7 +193,7 @@ function openFieldMapper(id: string) {
   }
 }
 
-function tagsMaperField(kind: string) {
+function tagsFieldMaper(kind: string) {
   return (field: [string]) => {
     let ele = document.createElement('div');
     ele.className = 'tags'
@@ -199,6 +201,31 @@ function tagsMaperField(kind: string) {
       insertRawTag(`light is-${kind}`, f, ele)
     }
     return ele
+  }
+}
+
+function handleAuthors(meta: any) {
+  handlePlainField(meta, 'authors', (authors: [string]) => {
+    let ele = document.createElement('p');
+    let text = authors.reduce((acc, x) => `${acc}\n${x}`)
+    ele.innerText += text
+    return ele
+  })
+}
+
+function handleFeatures(meta: any) {
+  let tr = document.getElementById(`info-features`)!
+  if (meta.features && Object.keys(meta.features).length > 0) {
+    handlePlainField(meta, 'features', (features: any) => {
+      let ele = document.createElement('div');
+      ele.className = 'tags'
+      for (const f of Object.keys(features)) {
+        insertRawTag(`light is-info`, f, ele)
+      }
+      return ele
+    })
+  } else {
+    hideElement(tr)
   }
 }
 
