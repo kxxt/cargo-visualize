@@ -7,6 +7,7 @@ import layouts from './layouts';
 import { DepEdge } from './dep-edge';
 import { labelText } from './pure';
 import { labelFontFamily } from './constants';
+import { clearTags, insertTag } from './tag';
 
 let loaded = false;
 
@@ -20,6 +21,7 @@ const degreeElement = document.getElementById("select-degree")! as HTMLSelectEle
 const searchElement = document.getElementById("search")! as HTMLInputElement;
 const infoHeading = document.getElementById("info-heading")!;
 const infoSubheading = document.getElementById("info-subheading")!;
+const infoTags = document.getElementById("info-tags")!;
 const searchResultElements = new Set<string>();
 
 register(ExtensionCategory.NODE, 'dep-node', DepNode)
@@ -103,8 +105,20 @@ graph.on(NodeEvent.CLICK, (e: Event) => {
   let target = e.target as any;
   let node = graph.getElementData(target.id);
   let data: any = node.data
+  // Basic
   infoHeading.innerText = `Crate ${data.name}`
   infoSubheading.innerText = `version ${data.version}`
+  // Tags
+  clearTags(infoTags)
+  if (data.dep_info.is_dev) {
+    insertTag("warning", "Dev", infoTags)
+  }
+  if (data.dep_info.is_build) {
+    insertTag("info", "Build", infoTags)
+  }
+  if (data.dep_info.is_normal) {
+    insertTag("link", "Normal", infoTags)
+  }
   console.log(data);
 })
 
