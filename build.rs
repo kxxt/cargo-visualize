@@ -5,7 +5,7 @@ fn main() {
         if #[cfg(debug_assertions)] {
             // DO not enable embed for debug mode
             if option_env!("FORCE_EMBED").is_some() {
-                println!("cargo::rustc-cfg=embed")    
+                println!("cargo::rustc-cfg=embed");    
             }
         } else if #[cfg(feature = "embed")] {
             println!("cargo::rustc-cfg=embed")

@@ -1,5 +1,10 @@
-use std::{iter, sync::Arc};
+use std::{
+    iter,
+    net::{Ipv4Addr, SocketAddrV4},
+    sync::Arc,
+};
 
+use anyhow::bail;
 use axum::{
     extract::{Path, State},
     http::StatusCode,
@@ -117,11 +122,23 @@ async fn main() -> anyhow::Result<()> {
         }
     };
 
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:3003").await.unwrap();
-    println!("listening on {}", listener.local_addr().unwrap());
-    axum::serve(listener, app).await.unwrap();
+    let base_port = 8913;
+    for i in 0..100 {
+        let port = base_port + i;
+        match tokio::net::TcpListener::bind(SocketAddrV4::new(Ipv4Addr::LOCALHOST, port)).await {
+            Ok(listener) => {
+                println!("listening on {}", listener.local_addr().unwrap());
+                axum::serve(listener, app).await.unwrap();
+                return Ok(());
+            }
+            Err(e) => {
+                eprintln!("Failed to bind to 127.0.0.1:{port}: {e}, trying next port");
+                continue;
+            }
+        };
+    }
 
-    Ok(())
+    bail!("Failed to find a free port for service.")
 }
 
 async fn handler_open(
