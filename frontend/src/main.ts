@@ -7,11 +7,14 @@ import layouts from './layouts';
 import { DepEdge } from './dep-edge';
 import { labelText } from './pure';
 import { labelFontFamily } from './constants';
-import { clearTags, insertTag } from './tag';
+import { clearTags, insertBadge, insertTag } from './tag';
+import { hideElement, showElement } from './dom';
 
 let loaded = false;
 
-let data = await fetch("http://127.0.0.1:3000/graph").then(res => res.json());
+const ENDPOINT = "http://127.0.0.1:3000"
+
+let data = await fetch(`${ENDPOINT}/graph`).then(res => res.json());
 
 const graphWidth = () => window.innerWidth - document.getElementById("sidebar")!.clientWidth;
 
@@ -22,7 +25,11 @@ const searchElement = document.getElementById("search")! as HTMLInputElement;
 const infoHeading = document.getElementById("info-heading")!;
 const infoSubheading = document.getElementById("info-subheading")!;
 const infoTags = document.getElementById("info-tags")!;
+const infoDescription = document.getElementById("info-description")!;
+const infoLicehnse = document.getElementById("info-license")!;
 const searchResultElements = new Set<string>();
+
+const crateCache = new Map();
 
 register(ExtensionCategory.NODE, 'dep-node', DepNode)
 register(ExtensionCategory.EDGE, 'dep-edge', DepEdge)
@@ -101,8 +108,13 @@ window.addEventListener("resize", (ev) => {
   graph.resize()
 })
 
-graph.on(NodeEvent.CLICK, (e: Event) => {
+graph.on(NodeEvent.CLICK, async (e: Event) => {
   let target = e.target as any;
+  let meta = crateCache.get(target.id);
+  if (!meta) {
+    meta = await fetch(`${ENDPOINT}/package/${target.id}`).then(x => x.json());
+    crateCache.set(target.id, meta)
+  }
   let node = graph.getElementData(target.id);
   let data: any = node.data
   // Basic
@@ -131,7 +143,20 @@ graph.on(NodeEvent.CLICK, (e: Event) => {
   if (data.is_proc_macro) {
     insertTag("danger", "proc-macro", infoTags)
   }
-  console.log(data);
+  if (meta.rust_version) {
+    insertBadge("warning", "Rust", meta.rust_version, infoTags)
+  }
+  if (meta.edition) {
+    insertBadge("success", "Edition", meta.edition, infoTags)
+  }
+  // Metadata
+  if (meta.description) {
+    infoDescription.innerText = meta.description
+    showElement(infoDescription)
+  } else {
+    hideElement(infoDescription)
+  }
+  console.log(meta);
 })
 
 graph.on(GraphEvent.BEFORE_LAYOUT, () => {

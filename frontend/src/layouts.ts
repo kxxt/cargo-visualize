@@ -21,7 +21,8 @@ export default {
     },
     "antv-dagre": {
         type: "antv-dagre",
-        ranksep: 30,
+        ranksep: 10,
+        nodesep: 10,
         radial: true
     },
     "circular": {
