@@ -13,19 +13,6 @@ const measureText = (style: TextStyleProps) => {
 };
 
 export class DepNode extends Rect {
-    protected drawTextShape(attrs: Required<BaseNodeStyleProps>, container: Group) {
-        const [w, h] = this.getSize(attrs)
-        // const label = this.upsert('text', GText, { text: this.id, x: 0, y: 10, fontSize: 10 }, container)!;
-        // const bbox = label.getBBox();
-        // this.labelHeight = bbox.height;
-        // this.labelWidth = bbox.width;
-    }
-    public render(attrs: Required<BaseNodeStyleProps>, container: Group) {
-        super.render(attrs, container);
-        // 调用自定义绘制逻辑
-        this.drawTextShape(attrs, container);
-    }
-
     protected getBadgesStyle(attributes: Required<RectStyleProps>): Record<string, NodeBadgeStyleProps | false> {
         const data: any = this.context.graph.getNodeData(this.id).data;
         const badgeStyle = super.getBadgesStyle(attributes)

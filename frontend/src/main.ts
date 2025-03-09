@@ -49,8 +49,15 @@ const graph = new Graph({
         let data: any = node.data
         if (data?.is_ws_member)
           return "cyan"
+        else if (data?.dep_info.is_optional) {
+          if (data?.dep_info!.is_target_dep) {
+            return "#93b48b"
+          } else {
+            return "#bcebcb"
+          }
+        }
         else if (data?.dep_info!.is_target_dep)
-          return "grey"
+          return "#aaa"
         else
           return "white"
       },
@@ -118,8 +125,8 @@ graph.on(NodeEvent.CLICK, async (e: Event) => {
   let node = graph.getElementData(target.id);
   let data: any = node.data
   // Basic
-  infoHeading.innerText = `Crate ${data.name}`
-  infoSubheading.innerText = `version ${data.version}`
+  infoHeading.innerText = `${data.name}`
+  infoSubheading.innerText = `${data.version}`
   // Tags
   clearTags(infoTags)
   if (data.is_ws_member) {
