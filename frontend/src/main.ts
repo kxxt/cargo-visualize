@@ -17,6 +17,7 @@ const ENDPOINT = "http://127.0.0.1:3000"
 let data = await fetch(`${ENDPOINT}/graph`).then(res => res.json());
 
 const graphWidth = () => window.innerWidth - document.getElementById("sidebar")!.clientWidth;
+const graphHeight = () => window.innerHeight - document.getElementById("topbar")!.clientHeight;
 
 const layoutElement = document.getElementById("layout")! as HTMLSelectElement;
 const resetElement = document.getElementById("reset")! as HTMLSelectElement;
@@ -99,8 +100,12 @@ const graph = new Graph({
     { key: 'click-select', type: 'click-select', degree: parseInt(degreeElement.value) }],
   plugins: [
     {
+      key: 'minimap',
       type: 'minimap',
-      size: [240, 160],
+      size: [160 * graphWidth() / graphHeight(), 160],
+      position: [0, 0],
+      containerStyle: {
+      }
     },
   ],
 });
@@ -113,6 +118,10 @@ graph.render();
 window.addEventListener("resize", (ev) => {
   graph.setSize(graphWidth(), 0)
   graph.resize()
+  graph.updatePlugin({
+    key: 'minimap',
+    size: [160 * graphWidth() / graphHeight(), 160],
+  })
 })
 
 graph.on(NodeEvent.CLICK, async (e: Event) => {
