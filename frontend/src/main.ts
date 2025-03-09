@@ -115,7 +115,7 @@ globalThis.graph = graph;
 
 graph.render();
 
-window.addEventListener("resize", (ev) => {
+window.addEventListener("resize", () => {
   graph.setSize(graphWidth(), 0)
   graph.resize()
   graph.updatePlugin({
