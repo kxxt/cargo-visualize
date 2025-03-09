@@ -30,7 +30,7 @@ h1 {
 
 #app {
   display: grid;
-  grid: 2rem auto / auto auto;
+  grid: calc(2rem + var(--bulma-control-padding-vertical)) auto / auto auto;
   width: 100%;
   min-height: 100vh;
 }
@@ -44,7 +44,13 @@ h1 {
 
 #topbar {
   grid-column: 1 / 3;
-  background-color: red;
+  margin: 0;
+}
+
+#topbar .field-label {
+  align-self: center;
+  margin-inline-end: 1rem;
+  flex-grow: 12;
 }
 
 #sidebar {

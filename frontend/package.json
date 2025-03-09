@@ -14,6 +14,7 @@
   },
   "packageManager": "yarn@4.6.0",
   "dependencies": {
-    "@antv/g6": "^5.0.44"
+    "@antv/g6": "^5.0.44",
+    "bulma": "^1.0.3"
   }
 }

@@ -951,6 +951,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bulma@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "bulma@npm:1.0.3"
+  checksum: 10c0/4720af6ea0a59694344b8a75d02aac16e18c0e92427129496b140a6a886a709b0c15980ebf91e1230f61009c6ca8c950ca65363487b7fdac381c77d119f49ed4
+  languageName: node
+  linkType: hard
+
 "cacache@npm:^19.0.1":
   version: 19.0.1
   resolution: "cacache@npm:19.0.1"
@@ -976,6 +983,7 @@ __metadata:
   resolution: "cargo-depvis-frontend@workspace:."
   dependencies:
     "@antv/g6": "npm:^5.0.44"
+    bulma: "npm:^1.0.3"
     typescript: "npm:~5.7.2"
     vite: "npm:^6.2.0"
   languageName: unknown

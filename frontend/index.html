@@ -1,42 +1,82 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DepVis</title>
-  </head>
-  <body>
-    <div id="app">
-      <div id="topbar">
-        <button id="reset">Reset</button>
-        <label for="layout">Layout: </label>
-        <select id="layout">
-          <option value="radial">Radical</option>
-          <option value="mds">MDS</option>
-          <option value="force">Force</option>
-          <option value="antv-dagre">AntvDagre</option>
-          <option value="d3-force">D3 Force</option>
-          <option value="circular">Circular</option>
-          <option value="concentric">Concentric</option>
-          <option value="dagre">Dagre</option>
-          <option value="grid">Grid</option>
-          <option value="random">Random</option>
-        </select>
-        <label for="select-degree">Select Degree: </label>
-        <select id="select-degree">
-          <option value="0">0</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-        </select>
-        <label for="search">Search: </label>
-        <input id="search" type="text">
-      </div>
-      <div id="graph"></div>
-      <div id="sidebar">
 
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DepVis</title>
+</head>
+
+<body>
+  <div id="app">
+    <nav id="topbar" class="level">
+      <div class="level-left">
+        <div class="level-item">
+          <div class="field is-horizontal">
+            <div class="field-label">
+              <button class="button is-warning is-small label" id="reset">Layout</button>
+            </div>
+            <div class="field-body">
+              <div class="control">
+                <div class="select is-success">
+                  <select id="layout">
+                    <option value="radial">Radical</option>
+                    <option value="mds">MDS</option>
+                    <option value="force">Force</option>
+                    <option value="antv-dagre">AntvDagre</option>
+                    <option value="d3-force">D3 Force</option>
+                    <option value="circular">Circular</option>
+                    <option value="concentric">Concentric</option>
+                    <option value="dagre">Dagre</option>
+                    <option value="grid">Grid</option>
+                    <option value="random">Random</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="level-item">
+          <div class="field is-horizontal">
+            <div class="field-label">
+              <label class="label is-small is-extended">Select Degree</label>
+            </div>
+            <div class="field-body">
+              <div class="control">
+                <div class="select is-success">
+                  <select id="select-degree">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+      <div class="level-right">
+        <div class="level-item">
+          <div class="field is-horizontal">
+            <div class="field-label">
+              <label class="label">Search</label>
+            </div>
+            <div class="field-body">
+              <div class="control">
+                  <input class="input" id="search" type="text">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <div id="graph"></div>
+    <div id="sidebar">
+
     </div>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
 </html>

@@ -1,5 +1,6 @@
 import './style.css'
 import './graph.css'
+import 'bulma/css/bulma.min.css'
 import { ExtensionCategory, Graph, GraphEvent, NodeEvent, register } from '@antv/g6';
 import { DepNode } from './dep-node';
 import layouts from './layouts';
@@ -14,6 +15,7 @@ let data = await fetch("http://127.0.0.1:3000/graph").then(res => res.json());
 const graphWidth = () => window.innerWidth - document.getElementById("sidebar")!.clientWidth;
 
 const layoutElement = document.getElementById("layout")! as HTMLSelectElement;
+const resetElement = document.getElementById("reset")! as HTMLSelectElement;
 const degreeElement = document.getElementById("select-degree")! as HTMLSelectElement;
 const searchElement = document.getElementById("search")! as HTMLInputElement;
 const searchResultElements = new Set<string>();
@@ -103,10 +105,12 @@ graph.on(NodeEvent.CLICK, (e: Event) => {
 
 graph.on(GraphEvent.BEFORE_LAYOUT, () => {
   layoutElement.disabled = true;
+  resetElement.disabled = true;
 })
 
 graph.on(GraphEvent.AFTER_LAYOUT, () => {
   layoutElement.disabled = false;
+  resetElement.disabled = false;
 })
 
 
