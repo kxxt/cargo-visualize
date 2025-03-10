@@ -11,8 +11,9 @@ import { clearTags, insertBadge, insertRawTag, insertTag } from './tag';
 import { hideElement, showElement } from './dom';
 
 let loaded = false;
-
-const ENDPOINT = "http://127.0.0.1:3000"
+const params = new URLSearchParams(window.location.search);
+const port = parseInt(params.get("backend") || "8913");
+const ENDPOINT = import.meta.env.DEV ? `http://127.0.0.1:${port}` : ""
 
 let data = await fetch(`${ENDPOINT}/graph`).then(res => res.json());
 
