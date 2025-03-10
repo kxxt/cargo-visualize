@@ -2,6 +2,7 @@ use clap::{value_parser, Arg, ArgAction, Command};
 
 pub(crate) struct Config {
     pub bind: Option<String>,
+    pub frontend_port: Option<u16>,
     pub build_deps: bool,
     pub dev_deps: bool,
     pub target_deps: bool,
@@ -33,6 +34,9 @@ pub(crate) fn parse_options() -> Config {
             Command::new("visualize")
                 .arg(Arg::new("bind").long("bind").action(ArgAction::Set).help(
                     "The address and port to listen on. (e.g. 127.0.0.1:8913)",
+                ))
+                .arg(Arg::new("frontend_port").long("frontend-port").value_parser(value_parser!(u16)).action(ArgAction::Set).help(
+                    "If set, cargo-visualize will use the provided frontend server listening on 127.0.0.1:frontend_port as its frontend.",
                 ))
                 .arg(Arg::new("all_deps").long("all-deps").action(ArgAction::SetTrue).help(
                     "Include all dependencies in the graph \
@@ -201,6 +205,7 @@ pub(crate) fn parse_options() -> Config {
     let matches = matches.subcommand_matches("visualize").unwrap();
 
     let bind = matches.get_one("bind").cloned();
+    let frontend_port = matches.get_one("frontend_port").cloned();
 
     let all_deps = matches.get_flag("all_deps");
     let build_deps = all_deps || matches.get_flag("build_deps");
@@ -227,6 +232,7 @@ pub(crate) fn parse_options() -> Config {
 
     Config {
         bind,
+        frontend_port,
         build_deps,
         dev_deps,
         target_deps,

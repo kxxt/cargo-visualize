@@ -1,15 +1,18 @@
-
 use crate::{
     dto::{DepGraphEdges, DepGraphInfo, DepGraphNodes},
     AppState,
 };
 use axum::{
-    extract::{Path, State},
-    http::StatusCode,
+    body::Body,
+    extract::{Path, Request, State},
+    http::{StatusCode, Uri},
+    response::{IntoResponse, Response},
     Json,
 };
 use cargo_metadata::Package;
+use hyper_util::client::legacy::connect::HttpConnector;
 
+pub type Client = hyper_util::client::legacy::Client<HttpConnector, Body>;
 
 pub async fn handler_open(
     State(state): State<AppState>,
@@ -73,4 +76,18 @@ pub async fn handler_edges(
     Ok(Json(DepGraphEdges {
         values: state.graph.edge_weights().cloned().map(Into::into).collect(),
     }))
+}
+
+pub async fn reverse_proxy(
+    State(state): State<AppState>,
+    mut req: Request,
+) -> Result<Response, StatusCode> {
+    let path = req.uri().path();
+    let path_query = req.uri().path_and_query().map(|v| v.as_str()).unwrap_or(path);
+
+    let uri = format!("http://127.0.0.1:{}{}", state.frontend_port, path_query);
+
+    *req.uri_mut() = Uri::try_from(uri).unwrap();
+
+    Ok(state.client.request(req).await.map_err(|_| StatusCode::BAD_REQUEST)?.into_response())
 }

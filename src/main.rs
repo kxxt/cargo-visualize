@@ -6,12 +6,18 @@ use std::{
 
 use anyhow::Context;
 use axum::{
-    routing::{get, post}, Router,
+    routing::{get, post},
+    Router,
 };
 use cargo_metadata::MetadataCommand;
 use cfg_if::cfg_if;
 use graph::{DepGraph, DepMap};
 
+use hyper_util::{
+    client::legacy::{connect::HttpConnector, Client as LegacyClient},
+    rt::TokioExecutor,
+};
+use routes::Client;
 use tower_http::cors::CorsLayer;
 
 // `DepInfo` represents the data associated with dependency graph edges
@@ -47,6 +53,8 @@ use self::{
 struct AppState {
     graph: Arc<DepGraph>,
     depmap: Arc<DepMap>,
+    frontend_port: u16,
+    client: Client, // cheap to clone
 }
 
 #[tokio::main(flavor = "current_thread")]
@@ -108,19 +116,28 @@ async fn main() -> anyhow::Result<()> {
         .route("/nodes", get(routes::handler_nodes))
         .route("/edges", get(routes::handler_edges))
         .route("/graph", get(routes::handler_graph))
-        .layer(cors)
-        .with_state(AppState { graph: Arc::new(graph), depmap: Arc::new(depmap) });
+        .layer(cors);
+    if config.frontend_port.is_some() {
+        app = app.fallback(routes::reverse_proxy)
+    } else {
+        cfg_if! {
+            if #[cfg(embed)] {
+                app = app
+                    .route("/", get(assets::handler_index))
+                    .route("/crab.svg", get(assets::static_handler))
+                    .route("/assets/{*file}", get(assets::static_handler))
+            } else {
+                app = app.fallback_service(tower_http::services::ServeDir::new("frontend/dist"))
+            }
+        };
+    }
 
-    cfg_if! {
-        if #[cfg(embed)] {
-            app = app
-                .route("/", get(assets::handler_index))
-                .route("/crab.svg", get(assets::static_handler))
-                .route("/assets/{*file}", get(assets::static_handler))
-        } else {
-            app = app.fallback_service(tower_http::services::ServeDir::new("frontend/dist"))
-        }
-    };
+    let app = app.with_state(AppState {
+        graph: Arc::new(graph),
+        depmap: Arc::new(depmap),
+        frontend_port: config.frontend_port.unwrap_or_default(),
+        client: LegacyClient::<(), ()>::builder(TokioExecutor::new()).build(HttpConnector::new()),
+    });
 
     let listener = if let Some(bind) = config.bind {
         tokio::net::TcpListener::bind(bind).await?
@@ -147,7 +164,6 @@ async fn main() -> anyhow::Result<()> {
     axum::serve(listener, app).await.unwrap();
     return Ok(());
 }
-
 
 fn cli_args(opt_name: &str, val: &str) -> impl Iterator<Item = String> {
     iter::once(opt_name.into()).chain(iter::once(val.into()))
