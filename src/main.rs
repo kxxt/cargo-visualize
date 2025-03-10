@@ -6,14 +6,10 @@ use std::{
 
 use anyhow::Context;
 use axum::{
-    extract::{Path, State},
-    http::StatusCode,
-    routing::{get, post},
-    Json, Router,
+    routing::{get, post}, Router,
 };
-use cargo_metadata::{MetadataCommand, Package};
+use cargo_metadata::MetadataCommand;
 use cfg_if::cfg_if;
-use dto::{DepGraphEdges, DepGraphInfo, DepGraphNodes};
 use graph::{DepGraph, DepMap};
 
 use tower_http::cors::CorsLayer;
@@ -35,6 +31,9 @@ mod cli;
 // Embeded assets
 #[cfg(embed)]
 mod assets;
+
+// Backend routes
+mod routes;
 
 use self::{
     cli::parse_options,
@@ -104,11 +103,11 @@ async fn main() -> anyhow::Result<()> {
     };
 
     let mut app = Router::new()
-        .route("/package/{id}", get(handler_crate_info))
-        .route("/open/{id}/{field}", post(handler_open))
-        .route("/nodes", get(handler_nodes))
-        .route("/edges", get(handler_edges))
-        .route("/graph", get(handler_graph))
+        .route("/package/{id}", get(routes::handler_crate_info))
+        .route("/open/{id}/{field}", post(routes::handler_open))
+        .route("/nodes", get(routes::handler_nodes))
+        .route("/edges", get(routes::handler_edges))
+        .route("/graph", get(routes::handler_graph))
         .layer(cors)
         .with_state(AppState { graph: Arc::new(graph), depmap: Arc::new(depmap) });
 
@@ -149,63 +148,6 @@ async fn main() -> anyhow::Result<()> {
     return Ok(());
 }
 
-async fn handler_open(
-    State(state): State<AppState>,
-    Path((id, field)): Path<(String, String)>,
-) -> StatusCode {
-    let Some(pkg) = state.depmap.get(&id) else {
-        return StatusCode::NOT_FOUND;
-    };
-    let Some(basedir) = pkg.manifest_path.parent() else {
-        return StatusCode::IM_A_TEAPOT;
-    };
-    let Some(path) = (match field.as_str() {
-        "manifest_path" => Some(basedir.to_owned()),
-        "readme" => pkg.readme(),
-        "license" => pkg.license_file(),
-        _ => return StatusCode::BAD_REQUEST,
-    }) else {
-        return StatusCode::BAD_REQUEST;
-    };
-    let path = path.as_std_path();
-    match open::that_detached(path) {
-        Ok(_) => StatusCode::OK,
-        Err(e) => {
-            eprintln!("Failed to open {}: {e}", path.display());
-            StatusCode::INTERNAL_SERVER_ERROR
-        }
-    }
-}
-
-async fn handler_crate_info(
-    State(state): State<AppState>,
-    Path(id): Path<String>,
-) -> Result<Json<Package>, StatusCode> {
-    if let Some(pkg) = state.depmap.get(&id) {
-        Ok(Json(pkg.clone()))
-    } else {
-        Err(StatusCode::NOT_FOUND)
-    }
-}
-
-async fn handler_graph(State(state): State<AppState>) -> Result<Json<DepGraphInfo>, StatusCode> {
-    Ok(Json(DepGraphInfo {
-        nodes: state.graph.node_weights().cloned().map(Into::into).collect(),
-        edges: state.graph.edge_weights().cloned().map(Into::into).collect(),
-    }))
-}
-
-async fn handler_nodes(State(state): State<AppState>) -> Result<Json<DepGraphNodes>, StatusCode> {
-    Ok(Json(DepGraphNodes {
-        values: state.graph.node_weights().cloned().map(Into::into).collect(),
-    }))
-}
-
-async fn handler_edges(State(state): State<AppState>) -> Result<Json<DepGraphEdges>, StatusCode> {
-    Ok(Json(DepGraphEdges {
-        values: state.graph.edge_weights().cloned().map(Into::into).collect(),
-    }))
-}
 
 fn cli_args(opt_name: &str, val: &str) -> impl Iterator<Item = String> {
     iter::once(opt_name.into()).chain(iter::once(val.into()))
