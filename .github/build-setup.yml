@@ -1,0 +1,4 @@
+- name: Enable corepack
+  run: |
+    npm i -g --force corepack
+    corepack enable
