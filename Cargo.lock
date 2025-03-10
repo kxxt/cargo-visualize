@@ -185,7 +185,16 @@ dependencies = [
 ]
 
 [[package]]
-name = "cargo-depviz"
+name = "cargo-platform"
+version = "0.1.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e35af189006b9c0f00a064685c727031e3ed2d8020f7ba284d78cc2671bd36ea"
+dependencies = [
+ "serde",
+]
+
+[[package]]
+name = "cargo-visualize"
 version = "1.6.0"
 dependencies = [
  "anyhow",
@@ -203,15 +212,6 @@ dependencies = [
  "tokio",
  "tower-http",
  "xshell",
-]
-
-[[package]]
-name = "cargo-platform"
-version = "0.1.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e35af189006b9c0f00a064685c727031e3ed2d8020f7ba284d78cc2671bd36ea"
-dependencies = [
- "serde",
 ]
 
 [[package]]
