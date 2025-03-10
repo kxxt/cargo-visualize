@@ -4,7 +4,7 @@ use std::{
     sync::Arc,
 };
 
-use anyhow::bail;
+use anyhow::Context;
 use axum::{
     extract::{Path, State},
     http::StatusCode,
@@ -15,6 +15,7 @@ use cargo_metadata::{MetadataCommand, Package};
 use cfg_if::cfg_if;
 use dto::{DepGraphEdges, DepGraphInfo, DepGraphNodes};
 use graph::{DepGraph, DepMap};
+
 use tower_http::cors::CorsLayer;
 
 // `DepInfo` represents the data associated with dependency graph edges
@@ -122,23 +123,30 @@ async fn main() -> anyhow::Result<()> {
         }
     };
 
-    let base_port = 8913;
-    for i in 0..100 {
-        let port = base_port + i;
-        match tokio::net::TcpListener::bind(SocketAddrV4::new(Ipv4Addr::LOCALHOST, port)).await {
-            Ok(listener) => {
-                println!("listening on {}", listener.local_addr().unwrap());
-                axum::serve(listener, app).await.unwrap();
-                return Ok(());
-            }
-            Err(e) => {
-                eprintln!("Failed to bind to 127.0.0.1:{port}: {e}, trying next port");
-                continue;
-            }
-        };
-    }
-
-    bail!("Failed to find a free port for service.")
+    let listener = if let Some(bind) = config.bind {
+        tokio::net::TcpListener::bind(bind).await?
+    } else {
+        let base_port = 8913;
+        let mut port = base_port;
+        loop {
+            match tokio::net::TcpListener::bind(SocketAddrV4::new(Ipv4Addr::LOCALHOST, port)).await
+            {
+                Ok(listener) => break Some(listener),
+                Err(e) => {
+                    eprintln!("Failed to bind to 127.0.0.1:{port}: {e}, trying next port");
+                    port += 1;
+                    if port > 9913 {
+                        break None;
+                    }
+                    continue;
+                }
+            };
+        }
+        .with_context(|| "Failed to find a free port for service in [8913..9913].")?
+    };
+    println!("Web service available on http://{}", listener.local_addr().unwrap());
+    axum::serve(listener, app).await.unwrap();
+    return Ok(());
 }
 
 async fn handler_open(

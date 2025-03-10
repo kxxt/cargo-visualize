@@ -1,6 +1,7 @@
 use clap::{value_parser, Arg, ArgAction, Command};
 
 pub(crate) struct Config {
+    pub bind: Option<String>,
     pub build_deps: bool,
     pub dev_deps: bool,
     pub target_deps: bool,
@@ -30,6 +31,9 @@ pub(crate) fn parse_options() -> Config {
         .version(env!("CARGO_PKG_VERSION"))
         .subcommand(
             Command::new("visualize")
+                .arg(Arg::new("bind").long("bind").action(ArgAction::Set).help(
+                    "The address and port to listen on. (e.g. 127.0.0.1:8913)",
+                ))
                 .arg(Arg::new("all_deps").long("all-deps").action(ArgAction::SetTrue).help(
                     "Include all dependencies in the graph \
                      (shorthand for --build-deps --dev-deps --target-deps)",
@@ -196,6 +200,8 @@ pub(crate) fn parse_options() -> Config {
 
     let matches = matches.subcommand_matches("visualize").unwrap();
 
+    let bind = matches.get_one("bind").cloned();
+
     let all_deps = matches.get_flag("all_deps");
     let build_deps = all_deps || matches.get_flag("build_deps");
     let dev_deps = all_deps || matches.get_flag("dev_deps");
@@ -220,6 +226,7 @@ pub(crate) fn parse_options() -> Config {
     let unstable_flags = matches.get_many("unstable_flags").map_or_else(Vec::new, collect_owned);
 
     Config {
+        bind,
         build_deps,
         dev_deps,
         target_deps,
