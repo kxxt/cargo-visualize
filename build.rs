@@ -1,16 +1,34 @@
-use std::error::Error;
+use std::{env, error::Error, path::PathBuf};
+
+use cfg_if::cfg_if;
 
 fn main() -> Result<(), Box<dyn Error>> {
     println!("cargo::rustc-check-cfg=cfg(embed)");
     println!("cargo::rerun-if-env-changed=FORCE_EMBED");
+    println!("cargo::rerun-if-env-changed=ASSET_DIR");
+    let dist = env::var_os("ASSET_DIR").map(PathBuf::from).unwrap_or_else(|| {
+        cfg_if! {
+            if #[cfg(debug_assertions)] {
+                // In debug mode, we just use the abs path of built frontend.
+                env::current_dir().unwrap().join("frontend").join("dist")
+            } else if #[cfg(not(feature = "embed"))] {
+                // If not debug and embed is turned off, we require ASSET_DIR to be set.
+                panic!("`embed` feature is turned off and env var `ASSET_DIR` is not set. Please set it to the path where cargo-visualize can load assets at runtime.")
+            }
+        }
+    });
     cfg_if::cfg_if! {
         if #[cfg(debug_assertions)] {
-            // DO not enable embed for debug mode
+            // Do not enable embed for debug mode
             if option_env!("FORCE_EMBED").is_some() {
                 println!("cargo::rustc-cfg=embed");
+            } else {
+                println!("cargo::rustc-env=__ASSET_DIR={}", dist.display());
             }
         } else if #[cfg(feature = "embed")] {
             println!("cargo::rustc-cfg=embed")
+        } else {
+            println!("cargo::rustc-env=__ASSET_DIR={}", dist.display());
         }
     }
     cfg_if::cfg_if! {

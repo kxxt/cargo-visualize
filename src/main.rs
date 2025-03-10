@@ -6,7 +6,8 @@ use std::{
 
 use anyhow::Context;
 use axum::{
-    routing::{get, post}, Router,
+    routing::{get, post},
+    Router,
 };
 use cargo_metadata::MetadataCommand;
 use cfg_if::cfg_if;
@@ -118,7 +119,7 @@ async fn main() -> anyhow::Result<()> {
                 .route("/crab.svg", get(assets::static_handler))
                 .route("/assets/{*file}", get(assets::static_handler))
         } else {
-            app = app.fallback_service(tower_http::services::ServeDir::new("frontend/dist"))
+            app = app.fallback_service(tower_http::services::ServeDir::new(env!("__ASSET_DIR")))
         }
     };
 
@@ -147,7 +148,6 @@ async fn main() -> anyhow::Result<()> {
     axum::serve(listener, app).await.unwrap();
     return Ok(());
 }
-
 
 fn cli_args(opt_name: &str, val: &str) -> impl Iterator<Item = String> {
     iter::once(opt_name.into()).chain(iter::once(val.into()))
