@@ -125,10 +125,23 @@ jobs:
             curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
             echo "$HOME/.cargo/bin" >> $GITHUB_PATH
           fi
+      - name: "Setup Node"
+        uses: "actions/setup-node@v4"
+        with:
+          "node-version": 22
       - name: "Enable corepack"
         run: |
           npm i -g --force corepack
           corepack enable
+          corepack install --global yarn@stable 
+      - name: "Setup Node with Yarn Cache"
+        uses: "actions/setup-node@v4"
+        with:
+          "cache": "yarn"
+          "cache-dependency-path": "frontend/package.json"
+          "node-version": 22
+        env:
+          "SKIP_YARN_COREPACK_CHECK": true
       - uses: swatinem/rust-cache@v2
         with:
           key: ${{ join(matrix.targets, '-') }}
