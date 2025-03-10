@@ -1,4 +1,10 @@
-use std::{collections::HashMap, sync::{atomic::{AtomicU16, Ordering}, Arc}};
+use std::{
+    collections::HashMap,
+    sync::{
+        atomic::{AtomicU16, Ordering},
+        Arc,
+    },
+};
 
 use cargo_metadata::{Package as MetaPackage, TargetKind};
 

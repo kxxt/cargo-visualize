@@ -1,4 +1,3 @@
-
 use crate::{
     dto::{DepGraphEdges, DepGraphInfo, DepGraphNodes},
     AppState,
@@ -9,7 +8,6 @@ use axum::{
     Json,
 };
 use cargo_metadata::Package;
-
 
 pub async fn handler_open(
     State(state): State<AppState>,
