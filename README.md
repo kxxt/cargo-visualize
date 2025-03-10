@@ -1,50 +1,29 @@
-# cargo-depgraph
+# cargo-visualize
 
-Creates dependency graphs for cargo projects using `cargo metadata` and graphviz.
+Know your dependencies via interactive cargo dependency graph visualization.
 
 ## Installation
 
-`cargo install cargo-depgraph`
-
-If you are using Arch Linux, you can alternatively install via `pacman -S cargo-depgraph`.
+See [installation instructions](./INSTALL.md)
 
 ## Usage
 
-*Note: This assumes you have [Graphviz](https://graphviz.org/) installed. There are also online
-tools that can generate graphics from the textual graphviz graphs `cargo depgraph` generates, if
-the command-line graphviz tools like `dot` aren't your thing.*
-
-`cargo depgraph [options] | dot -Tpng > graph.png`
+`cargo visualize [options]`
 
 The full list of options can be seen by running
 
-`cargo depgraph --help`
+`cargo visualize --help`
 
 Commonly useful options:
 
 * `--all-deps`
-
-![cargo-depgraph's dependency graph](graph_all.png)
-
 * `--all-deps --dedup-transitive-deps`
-
-![cargo-depgraph's dependency graph with transitive dependency edges de-duplicated](graph_all_deduped.png)
 
 ## Output explanation
 
-* square node = root / workspace member
-* grey background = target-specific dependency
-* dotted lines = optional dependency (could be removed by disabling a cargo feature)
-* dashed lines = transitively optional dependency (could be removed by removing one of the dotted
-  edges)
-* line colors = dependency kinds w.r.t. root / workspace members
-  * black = normal
-  * blue = dev-dependency
-  * green = build-dependency
-  * light turquoise = build-dependency of a dev-dependency
-  * dark green = both normal and build-dependency
-  * violet = both dev-dependency and build-dependency
-  * … not seen in the wild yet, but theoretically possible:
-    * dark turquoise = both normal and build-dependency of a dev-dependency
-    * pastel blue = both dev-dependency and build-dependency of a dev-dependency
-  * red = you broke it
+* Cyan background = root / workspace member
+* Grey background = target-specific dependency
+* Green background = optional dependency
+* Dark Green background = optional target-specific dependency
+* Dotted lines = optional dependency (could be removed by disabling a cargo feature)
+* Dashed lines = transitively optional dependency (could be removed by removing one of the dotted edges)
