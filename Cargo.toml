@@ -27,8 +27,9 @@ tokio = { version = "1.43.0", features = ["macros"] }
 tower-http = { version = "0.6.2", features = ["fs","cors"] }
 
 [features]
-default = ["embed"]
+default = ["embed", "build-frontend"]
 embed = ["dep:mime_guess"]
+build-frontend = ["dep:xshell"]
 
 [lints.rust]
 rust_2018_idioms = { level = "warn", priority = -1 }
@@ -57,3 +58,4 @@ wildcard_imports = "warn"
 
 [build-dependencies]
 cfg-if = "1.0.0"
+xshell = { version = "0.2.7", optional = true }
