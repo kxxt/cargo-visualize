@@ -14,6 +14,8 @@ fn main() -> Result<(), Box<dyn Error>> {
             } else if #[cfg(not(feature = "embed"))] {
                 // If not debug and embed is turned off, we require ASSET_DIR to be set.
                 panic!("`embed` feature is turned off and env var `ASSET_DIR` is not set. Please set it to the path where cargo-visualize can load assets at runtime.")
+            } else {
+                PathBuf::from("/not-used")
             }
         }
     });
