@@ -3,6 +3,12 @@ use std::{env, error::Error, path::PathBuf};
 use cfg_if::cfg_if;
 
 fn main() -> Result<(), Box<dyn Error>> {
+    #[cfg(target_os = "windows")]
+    #[allow(unused)]
+    let yarn = "yarn.cmd";
+    #[cfg(not(target_os = "windows"))]
+    #[allow(unused)]
+    let yarn = "yarn";
     println!("cargo::rustc-check-cfg=cfg(embed)");
     println!("cargo::rerun-if-env-changed=FORCE_EMBED");
     println!("cargo::rerun-if-env-changed=ASSET_DIR");
@@ -53,8 +59,8 @@ fn main() -> Result<(), Box<dyn Error>> {
             let sh = Shell::new()?;
             sh.change_dir("frontend");
             // The build script’s current directory is the source directory of the build script’s package.
-            cmd!(sh, "yarn install").run()?;
-            cmd!(sh, "yarn build").run()?;
+            cmd!(sh, "{yarn} install").run()?;
+            cmd!(sh, "{yarn} build").run()?;
         } else {
             println!("cargo::rerun-if-changed=build.rs")
         }
