@@ -29,7 +29,7 @@ mod util;
 // Command-line parsing
 mod cli;
 
-// Embeded assets
+// Embedded assets
 #[cfg(embed)]
 mod assets;
 
