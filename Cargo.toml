@@ -59,3 +59,8 @@ wildcard_imports = "warn"
 [build-dependencies]
 cfg-if = "1.0.0"
 xshell = { version = "0.2.7", optional = true }
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
