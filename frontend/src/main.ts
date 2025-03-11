@@ -293,6 +293,9 @@ graph.on(GraphEvent.AFTER_LAYOUT, () => {
   resetElement.disabled = false;
 })
 
+document.getElementById("fit")!.addEventListener("click", () => {
+  graph.fitView();
+})
 
 document.getElementById("reset")!.addEventListener("click", () => {
   graph.layout();
