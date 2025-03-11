@@ -1,3 +1,7 @@
+# 2.0.0-alpha.2
+
+- Initial cargo-visualize release based on cargo-depgraph
+
 # 1.6.0
 
 - Add the `--depth` option to limit many levels of dependencies are displayed
