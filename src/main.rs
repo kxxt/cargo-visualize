@@ -144,7 +144,15 @@ async fn main() -> anyhow::Result<()> {
         }
         .with_context(|| "Failed to find a free port for service in [8913..9913].")?
     };
-    println!("Web service available on http://{}", listener.local_addr().unwrap());
+    let url = format!("http://{}", listener.local_addr().unwrap());
+    eprintln!("Starting web service on {url}");
+    if !config.no_open {
+        _ = open::that(&url).inspect_err(|e| {
+            eprintln!(
+            "Failed to open {url} in browser, reason: {e}. Please try to manually open the link."
+        );
+        });
+    }
     axum::serve(listener, app).await.unwrap();
     return Ok(());
 }

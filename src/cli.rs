@@ -1,6 +1,7 @@
 use clap::{value_parser, Arg, ArgAction, Command};
 
 pub(crate) struct Config {
+    pub no_open: bool,
     pub bind: Option<String>,
     pub build_deps: bool,
     pub dev_deps: bool,
@@ -31,6 +32,9 @@ pub(crate) fn parse_options() -> Config {
         .version(env!("CARGO_PKG_VERSION"))
         .subcommand(
             Command::new("visualize")
+                .arg(Arg::new("no_open").long("no-open").action(ArgAction::SetTrue).help(
+                    "Do not automatically open visualization in browser",
+                ))
                 .arg(Arg::new("bind").long("bind").action(ArgAction::Set).help(
                     "The address and port to listen on. (e.g. 127.0.0.1:8913)",
                 ))
@@ -200,6 +204,7 @@ pub(crate) fn parse_options() -> Config {
 
     let matches = matches.subcommand_matches("visualize").unwrap();
 
+    let no_open = matches.get_flag("no_open");
     let bind = matches.get_one("bind").cloned();
 
     let all_deps = matches.get_flag("all_deps");
@@ -226,6 +231,7 @@ pub(crate) fn parse_options() -> Config {
     let unstable_flags = matches.get_many("unstable_flags").map_or_else(Vec::new, collect_owned);
 
     Config {
+        no_open,
         bind,
         build_deps,
         dev_deps,
