@@ -185,7 +185,6 @@ graph.on(NodeEvent.CLICK, async (e: Event) => {
   handlePlainField(meta, 'links')
   handlePlainField(meta, 'manifest_path', openFieldMapper(target.id))
   handlePlainField(meta, 'readme', openFieldMapper(target.id))
-  console.log(meta);
 })
 
 function urlMapField(field: string): HTMLElement {
