@@ -293,6 +293,14 @@ graph.on(GraphEvent.AFTER_LAYOUT, () => {
   resetElement.disabled = false;
 })
 
+document.getElementById("zoom-in")!.addEventListener("click", () => {
+  graph.zoomBy(1.25)
+})
+
+document.getElementById("zoom-out")!.addEventListener("click", () => {
+  graph.zoomBy(0.75)
+})
+
 document.getElementById("fit")!.addEventListener("click", () => {
   graph.fitView();
 })
