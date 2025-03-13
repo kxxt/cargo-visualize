@@ -1,5 +1,4 @@
 import './style.css'
-import './graph.css'
 import 'bulma/css/bulma.min.css'
 import { ExtensionCategory, Graph, GraphEvent, NodeEvent, register } from '@antv/g6';
 import { DepNode } from './dep-node';
