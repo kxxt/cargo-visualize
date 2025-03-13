@@ -56,6 +56,18 @@ h1 {
   flex-grow: 12;
 }
 
+#resize-handle {
+  flex: 0 0 auto;
+  position: relative;
+  box-sizing: border-box;
+  grid-row: 2;
+  grid-column: 2;
+  width: 5px;
+  height: 100%;
+  cursor: ew-resize;
+  user-select: none;
+}
+
 #sidebar {
   display: flex;
   flex-direction: column;
