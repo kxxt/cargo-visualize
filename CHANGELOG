@@ -1,3 +1,10 @@
+# 2.1.0
+
+- Disable corepack in frontend project.
+- Make the sidebar resizable.
+
+https://github.com/user-attachments/assets/ff55d8bf-844c-40ce-9789-fe21ff22205f
+
 # 2.0.0
 
 - Initial cargo-visualize release based on cargo-depgraph
