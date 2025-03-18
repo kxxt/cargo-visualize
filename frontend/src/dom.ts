@@ -7,7 +7,5 @@ export function hideElement(ele: HTMLElement) {
 export function showElement(ele: HTMLElement) {
     if (ele.classList.contains('is-hidden')) {
         ele.classList.remove('is-hidden')
-    } else {
-        console.warn(`${ele} is already visible`)
     }
 }
