@@ -23,7 +23,7 @@ open = "5.3.2"
 petgraph = { version = "0.7", default-features = false, features = ["stable_graph"] }
 rust-embed = "8.6.0"
 serde = { version = "1.0.218", features = ["derive"] }
-tokio = { version = "1.43.0", features = ["macros"] }
+tokio = { version = "1.44.2", features = ["macros"] }
 tower-http = { version = "0.6.2", features = ["fs","cors"] }
 
 [features]
