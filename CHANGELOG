@@ -1,4 +1,4 @@
-# 2.2.0-alpha.1
+# 2.2.0-alpha.2
 
 - Use fork of cargo-dist to provide support for building binaries for riscv64 and loongarch64.
 
