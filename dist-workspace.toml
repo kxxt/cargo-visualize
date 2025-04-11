@@ -7,7 +7,7 @@ github-build-setup = "../build-setup.yml"
 # Which actions to run on pull requests
 pr-run-mode = "upload"
 # The preferred dist version to use in CI (Cargo.toml SemVer syntax)
-cargo-dist-version = "1.0.0-rc.1+kxxt.5"
+cargo-dist-version = "1.0.0-rc.1+kxxt.8"
 # CI backends to support
 ci = "github"
 # The installers to generate for each app
