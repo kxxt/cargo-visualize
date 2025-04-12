@@ -189,7 +189,7 @@ dependencies = [
 
 [[package]]
 name = "cargo-visualize"
-version = "2.2.0-alpha.2"
+version = "2.2.0-alpha.3"
 dependencies = [
  "anyhow",
  "axum",
