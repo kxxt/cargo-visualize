@@ -2,6 +2,7 @@ use std::collections::{hash_map::Entry as HashMapEntry, HashMap, VecDeque};
 
 use anyhow::Context;
 use cargo_metadata::{DependencyKind as MetaDepKind, Metadata, Package as MetaPackage, PackageId};
+use indicatif::{ProgressBar, ProgressStyle};
 use nanoid::nanoid;
 use petgraph::prelude::NodeIndex;
 
@@ -35,6 +36,10 @@ pub(crate) fn get_dep_graph(
 
     // Calculate the multiplicity of edge.
     let mut edge_multiplicity: HashMap<(NodeIndex<u16>, NodeIndex<u16>), u32> = HashMap::new();
+
+    let bar = ProgressBar::new_spinner()
+        .with_prefix("Adding packages to graph...")
+        .with_style(ProgressStyle::with_template("    {spinner} {prefix} ({pos})").unwrap());
 
     // Add roots
     for pkg_id in &metadata.workspace_members {
@@ -75,6 +80,7 @@ pub(crate) fn get_dep_graph(
             .context("package not found in resolve")?;
 
         for dep in &resolve_node.deps {
+            bar.inc(1);
             // Same as dep.name in most cases, but not if it got renamed in parent's Cargo.toml
             let dep_crate_name = &get_package(&metadata.packages, &dep.pkg).name;
 
@@ -178,6 +184,8 @@ pub(crate) fn get_dep_graph(
             }
         }
     }
+
+    bar.finish();
 
     Ok((graph, depmap))
 }

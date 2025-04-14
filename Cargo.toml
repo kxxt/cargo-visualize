@@ -17,6 +17,8 @@ base64 = "0.22.1"
 cargo_metadata = "0.19"
 cfg-if = "1.0.0"
 clap = "4.0.18"
+console = "0.15.11"
+indicatif = "0.17.11"
 mime_guess = { version = "2.0.5", optional = true }
 nanoid = "0.4.0"
 open = "5.3.2"

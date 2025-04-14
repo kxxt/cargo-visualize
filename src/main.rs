@@ -11,8 +11,10 @@ use axum::{
 };
 use cargo_metadata::MetadataCommand;
 use cfg_if::cfg_if;
+use console::style;
 use graph::{DepGraph, DepMap};
 
+use indicatif::ProgressStyle;
 use tower_http::cors::CorsLayer;
 
 // `DepInfo` represents the data associated with dependency graph edges
@@ -81,8 +83,15 @@ async fn main() -> anyhow::Result<()> {
     other_options.extend(config.unstable_flags.iter().flat_map(|f| cli_args("-Z", f)));
 
     let metadata = cmd.other_options(other_options).exec()?;
-
+    eprintln!(
+        "{} Building dependency graph...",
+        style("[1/3]").bold().dim(),
+    );
     let (mut graph, depmap) = get_dep_graph(metadata, &config)?;
+    eprintln!(
+        "{} Updating dependency info...",
+        style("[2/3]").bold().dim(),
+    );
     update_dep_info(&mut graph);
     if !config.focus.is_empty() {
         remove_irrelevant_deps(&mut graph, &config.focus);
@@ -145,7 +154,11 @@ async fn main() -> anyhow::Result<()> {
         .with_context(|| "Failed to find a free port for service in [8913..9913].")?
     };
     let url = format!("http://{}", listener.local_addr().unwrap());
-    eprintln!("Starting web service on {url}");
+    eprintln!(
+        "{} Starting web service on {url} ...",
+        style("[3/3]").bold().dim(),
+    );
+
     if !config.no_open {
         _ = open::that(&url).inspect_err(|e| {
             eprintln!(
