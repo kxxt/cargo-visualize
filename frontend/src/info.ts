@@ -1,3 +1,4 @@
+import { Graph } from "@antv/g6";
 import { ENDPOINT } from "./constants";
 import { hideElement, showElement } from "./dom";
 import { clearTags, insertBadge, insertRawTag, insertTag } from "./tag";
@@ -102,9 +103,7 @@ function handlePlainField(meta: any, field: string, map?: Function | undefined, 
     }
 }
 
-
-
-export function prepare_info_tab(id: string, meta: any, data: any) {
+export function prepareDetailHeader(id: string, meta: any, data: any) {
     // Basic
     infoHeading.innerText = `${data.name}`
     infoSubheading.innerText = `${data.version}`
@@ -144,6 +143,11 @@ export function prepare_info_tab(id: string, meta: any, data: any) {
     } else {
         hideElement(infoDescription)
     }
+}
+
+export function prepareInfoTab(_graph: Graph, id: string, meta: any, data: any) {
+    console.log("WTF")
+    prepareDetailHeader(id, meta, data)
     handleLicense(meta, id)
     handleFeatures(meta)
     handleAuthors(meta)
