@@ -1,6 +1,9 @@
-# 2.2.0-alpha.3
+# 2.2.0-rc.0
 
-- Use fork of cargo-dist to provide support for building binaries for riscv64 and loongarch64.
+- Show progress report in terminal.
+- Release binary for `loongarch64-unknown-linux-gnu` platform.
+- Dependencies bumps.
+- Internal refactor.
 
 # 2.1.0
 

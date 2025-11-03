@@ -1,6 +1,6 @@
 [package]
 name = "cargo-visualize"
-version = "2.2.0-alpha.3"
+version = "2.2.0-rc.0"
 authors = ["Levi Zim <rsworktech@outlook.com>", "Jonas Platte <jplatte@posteo.de>"]
 license = "GPL-3.0-or-later"
 edition = "2021"
