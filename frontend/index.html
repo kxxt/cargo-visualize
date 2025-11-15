@@ -92,11 +92,10 @@
         </div>
       </div>
       <p class="panel-tabs">
-        <a class="is-active">Info</a>
-        <a class="is-hidden">Relation</a>
-        <a></a>
+        <a id="info-tab-switcher" class="is-active">Info</a>
+        <a id="rel-tab-switcher">Relation</a>
       </p>
-      <div class="panel-block scrollable-container">
+      <div id="info-tab" class="panel-block scrollable-container">
         <table id="info-table" class="table is-fullwidth is-hoverable">
           <tbody>
             <tr id="info-license" class="is-hidden">
@@ -149,6 +148,24 @@
             </tr>
           </tbody>
         </table>
+      </div>
+      <div id="rel-tab" class="panel-block scrollable-container is-hidden">
+        <section class="tab-details section">
+          <h4 class="title is-6">Depends on</h4>
+          <table id="rel-depend-table" class="table is-fullwidth is-hoverable is-striped">
+            <tbody>
+              
+            </tbody>
+          </table>
+        </section>
+        <section class="tab-details section">
+          <h4 class="title is-6">Depended by</h4>
+          <table id="rel-rdepend-table" class="table is-fullwidth is-hoverable is-striped">
+            <tbody>
+              
+            </tbody>
+          </table>
+        </section>
       </div>
     </nav>
   </div>
