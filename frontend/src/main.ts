@@ -6,8 +6,9 @@ import layouts from './layouts';
 import { DepEdge } from './dep-edge';
 import { labelText } from './pure';
 import { ENDPOINT, labelFontFamily } from './constants';
-import { prepare_info_tab } from './info';
+import { prepareInfoTab } from './info';
 import { graphHeight, graphWidth, initializeGraphResizeHandle } from './resize';
+import { prepareRelTab } from './rel';
 
 let data = await fetch(`${ENDPOINT}/graph`).then(res => res.json());
 
@@ -99,21 +100,37 @@ const graph = new Graph({
   ],
 });
 
-// @ts-ignore
 globalThis.graph = graph;
+
+declare global {
+  var graph: Graph;
+  var currentNodeId: string;
+}
 
 graph.render();
 
+async function fetchMeta(id: string): Promise<any> {
+  let meta = crateCache.get(id);
+  if (!meta) {
+    meta = await fetch(`${ENDPOINT}/package/${id}`).then(x => x.json());
+    crateCache.set(id, meta)
+  }
+  return meta;
+}
+
+const activeTabCallbacks: { [key: string]: Function } = {
+  "info": prepareInfoTab,
+  "rel": prepareRelTab
+}
+
 graph.on(NodeEvent.CLICK, async (e: Event) => {
   let target = e.target as any;
-  let meta = crateCache.get(target.id);
-  if (!meta) {
-    meta = await fetch(`${ENDPOINT}/package/${target.id}`).then(x => x.json());
-    crateCache.set(target.id, meta)
-  }
   let node = graph.getElementData(target.id);
   let data: any = node.data
-  prepare_info_tab(target.id, meta, data)
+  let meta = await fetchMeta(target.id);
+  globalThis.currentNodeId = target.id;
+
+  activeTabCallbacks[activeTab](graph, target.id, meta, data)
 })
 
 graph.on(GraphEvent.BEFORE_LAYOUT, () => {
@@ -175,5 +192,41 @@ document.getElementById("search")!.addEventListener("keyup", (e) => {
 })
 
 window.addEventListener("load", () => searchElement.value = '')
+
+// Register a details tab on the sidebar
+
+const detailTabs: {
+  [key: string]: {
+    switcher: HTMLElement,
+    body: HTMLElement
+  };
+} = {}
+let activeTab = 'info';
+
+function registerDetailsTab(id: string) {
+  const switcher = document.getElementById(`${id}-tab-switcher`)!;
+  const body = document.getElementById(`${id}-tab`)!;
+  detailTabs[id] = {
+    switcher, body
+  }
+  switcher.addEventListener("click", async () => {
+    activeTab = id;
+    for (const key in detailTabs) {
+      // Set all tabs to inactive
+      detailTabs[key].switcher.classList.remove('is-active');
+      detailTabs[key].body.classList.add('is-hidden');
+    }
+    switcher.classList.add('is-active');
+    body.classList.remove('is-hidden');
+    let node = graph.getElementData(globalThis.currentNodeId);
+    let data: any = node.data
+    let meta = await fetchMeta(globalThis.currentNodeId);
+  
+    activeTabCallbacks[activeTab](graph, globalThis.currentNodeId, meta, data)
+  })
+}
+
+registerDetailsTab('info')
+registerDetailsTab('rel')
 
 initializeGraphResizeHandle(graph, graphContainer, sideBar)

@@ -87,3 +87,15 @@ h1 {
   text-overflow: ellipsis;
   align-self: flex-start;
 }
+
+#rel-tab {
+  flex-direction: column;
+}
+
+#rel-tab > section {
+  width: 100%;
+}
+
+.tab-details.section {
+  padding: 0.5rem;
+}
